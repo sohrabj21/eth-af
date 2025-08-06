@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eth.af - Ethereum Wallet Explorer</title>
+    <title>eth.af - Advanced Ethereum Wallet Explorer</title>
     <style>
         * {
             margin: 0;
@@ -19,12 +19,12 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* Landing Page Styles */
+        /* Landing Page */
         .landing {
             display: flex;
             flex-direction: column;
@@ -35,17 +35,21 @@
         }
 
         .logo {
-            font-size: 4rem;
-            font-weight: 800;
-            color: white;
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: -2px;
         }
 
         .tagline {
-            color: rgba(255,255,255,0.9);
-            font-size: 1.2rem;
+            color: rgba(255,255,255,0.95);
+            font-size: 1.3rem;
             margin-bottom: 50px;
+            font-weight: 300;
         }
 
         .search-container {
@@ -56,71 +60,88 @@
 
         .search-bar {
             width: 100%;
-            padding: 20px 30px;
-            font-size: 1.1rem;
+            padding: 22px 35px;
+            font-size: 1.15rem;
             border: none;
-            border-radius: 50px;
-            background: white;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 60px;
+            background: rgba(255,255,255,0.98);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
         }
 
         .search-bar:focus {
             outline: none;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             transform: translateY(-2px);
-        }
-
-        .search-bar::placeholder {
-            color: #999;
+            background: white;
         }
 
         .search-btn {
-            margin-top: 20px;
-            padding: 15px 40px;
-            font-size: 1.1rem;
+            margin-top: 25px;
+            padding: 16px 45px;
+            font-size: 1.15rem;
             background: white;
             color: #667eea;
             border: none;
-            border-radius: 50px;
+            border-radius: 60px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            letter-spacing: 0.5px;
         }
 
         .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+            background: #f8f8f8;
         }
 
-        /* Wallet View Styles */
+        /* Wallet View */
         .wallet-view {
             display: none;
-            background: white;
-            border-radius: 20px;
+            background: #f7f8fa;
+            border-radius: 24px;
             margin-top: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.13);
             overflow: hidden;
         }
 
         .wallet-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 60%;
+            height: 200%;
+            background: rgba(255,255,255,0.05);
+            transform: rotate(35deg);
         }
 
         .wallet-address {
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 1.05rem;
             word-break: break-all;
-            opacity: 0.9;
+            opacity: 0.95;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .wallet-stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 30px;
-            margin-top: 20px;
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
         }
 
         .stat {
@@ -129,132 +150,257 @@
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
+            font-size: 0.85rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
         }
 
         .stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-top: 5px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 8px;
+            letter-spacing: -0.5px;
         }
 
-        /* Tabs */
-        .tabs {
+        /* Main Tabs */
+        .main-tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: white;
+            border-bottom: 1px solid #e8ecf1;
+            padding: 0 20px;
         }
 
-        .tab {
+        .main-tab {
             flex: 1;
-            padding: 20px;
+            padding: 22px;
             background: none;
             border: none;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             cursor: pointer;
             position: relative;
             transition: all 0.3s ease;
-            color: #666;
+            color: #6b7280;
+            font-weight: 500;
         }
 
-        .tab.active {
+        .main-tab:hover {
+            color: #667eea;
+        }
+
+        .main-tab.active {
             color: #667eea;
             font-weight: 600;
         }
 
-        .tab.active::after {
+        .main-tab.active::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 20%;
+            right: 20%;
             height: 3px;
-            background: #667eea;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px 3px 0 0;
         }
 
         .tab-content {
             padding: 30px;
             display: none;
+            background: white;
+            min-height: 400px;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Coins Tab */
-        .coin-item {
+        /* Coins Section */
+        .tokens-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .chain-section {
+            margin-bottom: 35px;
+        }
+
+        .chain-header {
             display: flex;
             align-items: center;
-            padding: 20px;
-            border-radius: 12px;
-            background: #f8f9fa;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f3f4f6;
         }
 
-        .coin-item:hover {
-            background: #f0f0f0;
-            transform: translateX(5px);
-        }
-
-        .coin-icon {
-            width: 40px;
-            height: 40px;
+        .chain-icon {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
-            margin-right: 20px;
+            font-weight: bold;
+            font-size: 14px;
         }
 
-        .coin-details {
-            flex: 1;
+        .chain-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1f2937;
         }
 
-        .coin-name {
-            font-weight: 600;
+        .chain-value {
+            margin-left: auto;
             font-size: 1.1rem;
-            color: #333;
+            color: #6b7280;
+            font-weight: 600;
         }
 
-        .coin-symbol {
-            color: #666;
+        .token-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 22px;
+            border-radius: 16px;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .token-item:hover {
+            background: #f3f4f6;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .token-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            margin-right: 18px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .token-logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .token-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .token-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #1f2937;
+            margin-bottom: 3px;
+        }
+
+        .token-symbol {
+            color: #6b7280;
             font-size: 0.9rem;
-            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .coin-balance {
+        .token-chain-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            color: #4b5563;
+            font-weight: 600;
+        }
+
+        .token-balance {
             text-align: right;
         }
 
-        .coin-amount {
+        .token-amount {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1f2937;
+            margin-bottom: 3px;
+        }
+
+        .token-usd {
+            color: #10b981;
+            font-size: 0.95rem;
             font-weight: 600;
-            font-size: 1.1rem;
-            color: #333;
         }
 
-        .coin-usd {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 3px;
+        /* NFT Collections Tabs */
+        .nft-collections-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 15px;
         }
 
-        /* NFTs Tab */
-        .collection {
-            margin-bottom: 40px;
+        .collection-tab {
+            padding: 10px 20px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .collection-header {
-            font-size: 1.3rem;
+        .collection-tab:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .collection-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+        }
+
+        .collection-count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .collection-tab.active .collection-count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* NFT Grid */
+        .nft-collection-content {
+            display: none;
+        }
+
+        .nft-collection-content.active {
+            display: block;
         }
 
         .nft-grid {
@@ -264,58 +410,79 @@
         }
 
         .nft-item {
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            background: #f8f9fa;
+            background: white;
             transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
         .nft-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
         }
 
         .nft-image {
             width: 100%;
             height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea20, #764ba220);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #667eea;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nft-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nft-image-placeholder {
             font-size: 3rem;
         }
 
         .nft-details {
             padding: 15px;
+            background: white;
         }
 
         .nft-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .nft-id {
-            color: #666;
-            font-size: 0.9rem;
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
+        /* Loading and Error States */
         .loading {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px;
+            color: #6b7280;
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
+            border: 3px solid #f3f4f6;
             border-top: 3px solid #667eea;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
         }
 
         @keyframes spin {
@@ -324,37 +491,61 @@
         }
 
         .error {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 12px;
             margin: 20px 0;
+            border: 1px solid #fecaca;
         }
 
         .back-btn {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            padding: 10px 20px;
-            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 25px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
             margin-bottom: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .back-btn:hover {
-            background: #667eea;
-            color: white;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-5px);
         }
 
-        .demo-note {
-            background: #e8f4ff;
-            color: #0066cc;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px;
+        .empty-state {
             text-align: center;
+            padding: 60px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 3.5rem;
+            }
+            
+            .wallet-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nft-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
         }
     </style>
 </head>
@@ -363,7 +554,7 @@
         <!-- Landing Page -->
         <div id="landing" class="landing">
             <h1 class="logo">eth.af</h1>
-            <p class="tagline">Explore any Ethereum wallet with ease</p>
+            <p class="tagline">Multi-Chain Wallet Explorer with Full Token & NFT Support</p>
             <div class="search-container">
                 <input 
                     type="text" 
@@ -378,9 +569,8 @@
 
         <!-- Wallet View -->
         <div id="walletView" class="wallet-view">
-            <button onclick="goBack()" class="back-btn">← New Search</button>
-            
             <div class="wallet-header">
+                <button onclick="goBack()" class="back-btn">← New Search</button>
                 <div class="wallet-address" id="walletAddress"></div>
                 <div class="wallet-stats">
                     <div class="stat">
@@ -395,70 +585,51 @@
                         <span class="stat-label">NFTs</span>
                         <span class="stat-value" id="nftCount">0</span>
                     </div>
+                    <div class="stat">
+                        <span class="stat-label">Chains</span>
+                        <span class="stat-value" id="chainCount">1</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('coins')">Coins</button>
-                <button class="tab" onclick="switchTab('nfts')">NFTs</button>
+            <div class="main-tabs">
+                <button class="main-tab active" onclick="switchMainTab('tokens')">🪙 Tokens</button>
+                <button class="main-tab" onclick="switchMainTab('nfts')">🎨 NFTs</button>
+                <button class="main-tab" onclick="switchMainTab('activity')">📊 Activity</button>
             </div>
 
-            <div id="coinsTab" class="tab-content active">
+            <div id="tokensTab" class="tab-content active">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading wallet data...</p>
+                    <p>Loading all tokens across chains...</p>
                 </div>
             </div>
 
             <div id="nftsTab" class="tab-content">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading NFT collection...</p>
+                    <p>Loading NFT collections...</p>
+                </div>
+            </div>
+
+            <div id="activityTab" class="tab-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <div class="empty-state-text">Activity tracking coming soon!</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentTab = 'coins';
-
-        // Backend API configuration
+        // Configuration
         const API_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3001/api' 
+            ? 'http://localhost:3000/api' 
             : 'https://eth-af-backend.onrender.com/api';
 
-        // Sample data for demonstration when backend is not available
-        const sampleCoins = [
-            { name: 'Ethereum', symbol: 'ETH', balance: '5.234', usdValue: 10468.00 },
-            { name: 'USD Coin', symbol: 'USDC', balance: '2500.00', usdValue: 2500.00 },
-            { name: 'Wrapped Bitcoin', symbol: 'WBTC', balance: '0.15', usdValue: 6750.00 },
-            { name: 'Chainlink', symbol: 'LINK', balance: '150.00', usdValue: 1125.00 },
-            { name: 'Uniswap', symbol: 'UNI', balance: '100.00', usdValue: 650.00 }
-        ];
-
-        const sampleNFTs = [
-            {
-                name: 'Bored Ape Yacht Club',
-                nfts: [
-                    { name: 'BAYC', tokenId: '8734' },
-                    { name: 'BAYC', tokenId: '2140' }
-                ]
-            },
-            {
-                name: 'CryptoPunks',
-                nfts: [
-                    { name: 'CryptoPunk', tokenId: '5822' }
-                ]
-            },
-            {
-                name: 'Art Blocks',
-                nfts: [
-                    { name: 'Chromie Squiggle', tokenId: '145' },
-                    { name: 'Fidenza', tokenId: '78' },
-                    { name: 'Ringers', tokenId: '962' }
-                ]
-            }
-        ];
+        let currentMainTab = 'tokens';
+        let currentNFTCollection = null;
+        let walletData = null;
 
         function isValidAddress(address) {
             return /^0x[a-fA-F0-9]{40}$/.test(address) || /\.eth$/.test(address);
@@ -483,147 +654,155 @@
             
             // Set initial loading state
             document.getElementById('walletAddress').textContent = input;
-            document.getElementById('coinsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading wallet data...</p></div>';
-            document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading NFT collection...</p></div>';
-            
-            // Reset stats during loading
-            document.getElementById('totalValue').textContent = 'Loading...';
-            document.getElementById('tokenCount').textContent = '...';
-            document.getElementById('nftCount').textContent = '...';
+            resetLoadingStates();
             
             // Load data from API
             await loadWalletData(input);
         }
 
+        function resetLoadingStates() {
+            document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all tokens across chains...</p></div>';
+            document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading NFT collections...</p></div>';
+            document.getElementById('totalValue').textContent = 'Loading...';
+            document.getElementById('tokenCount').textContent = '...';
+            document.getElementById('nftCount').textContent = '...';
+            document.getElementById('chainCount').textContent = '...';
+        }
+
         async function loadWalletData(address) {
-            // Check if we should use real API or demo data
-            const useRealAPI = API_URL !== 'eth-af-backend-production.up.railway.app';
-            
-            if (useRealAPI) {
-                try {
-                    // Fetch data from backend
-                    const response = await fetch(`${API_URL}/wallet/${address}`);
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch wallet data');
-                    }
-                    
-                    const data = await response.json();
-                    displayRealData(data);
-                    
-                } catch (error) {
-                    console.error('Error loading wallet data:', error);
-                    // Fall back to demo data
-                    displayDemoData();
+            try {
+                // Try multi-chain endpoint first, fallback to regular
+                const response = await fetch(`${API_URL}/wallet/${address}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch wallet data');
                 }
-            } else {
-                // Use demo data
-                displayDemoData();
+                
+                walletData = await response.json();
+                
+                // Update address (in case ENS was resolved)
+                document.getElementById('walletAddress').textContent = walletData.address;
+                
+                // Display tokens
+                displayTokens(walletData.tokens);
+                
+                // Display NFTs
+                displayNFTs(walletData.nfts);
+                
+                // Update stats
+                updateStats(walletData);
+                
+            } catch (error) {
+                console.error('Error loading wallet data:', error);
+                showError('Failed to load wallet data. Please try again.');
             }
         }
 
-        function displayRealData(data) {
-            // Update wallet address (in case ENS was resolved)
-            document.getElementById('walletAddress').textContent = data.address;
-            
-            // Load coins
-            if (data.tokens && data.tokens.length > 0) {
-                const coinsHTML = data.tokens.map(token => {
-                    const balance = parseFloat(token.balance).toFixed(4);
-                    const usdValue = token.usdValue ? token.usdValue.toFixed(2) : '0.00';
-                    return `
-                        <div class="coin-item">
-                            <div class="coin-icon">${token.symbol.substring(0, 2)}</div>
-                            <div class="coin-details">
-                                <div class="coin-name">${token.name}</div>
-                                <div class="coin-symbol">${token.symbol}</div>
-                            </div>
-                            <div class="coin-balance">
-                                <div class="coin-amount">${balance} ${token.symbol}</div>
-                                <div class="coin-usd">$${numberWithCommas(usdValue)}</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('coinsTab').innerHTML = coinsHTML;
-            } else {
-                document.getElementById('coinsTab').innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No tokens found in this wallet</p>';
+        function displayTokens(tokens) {
+            if (!tokens || tokens.length === 0) {
+                document.getElementById('tokensTab').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🪙</div>
+                        <div class="empty-state-text">No tokens found in this wallet</div>
+                    </div>
+                `;
+                return;
             }
+
+            // Group tokens by chain (for now just Ethereum)
+            const tokensByChain = { ethereum: tokens };
             
-            // Load NFTs
-            if (data.nfts && data.nfts.length > 0) {
-                let nftsHTML = '';
-                data.nfts.forEach(collection => {
-                    nftsHTML += `
-                        <div class="collection">
-                            <div class="collection-header">${collection.name} (${collection.nfts.length})</div>
-                            <div class="nft-grid">
-                                ${collection.nfts.map(nft => `
-                                    <div class="nft-item">
-                                        ${nft.image 
-                                            ? `<img src="${nft.image}" class="nft-image" style="object-fit: cover;" alt="${nft.name}">`
-                                            : '<div class="nft-image">🎨</div>'
-                                        }
-                                        <div class="nft-details">
-                                            <div class="nft-name">${nft.name}</div>
-                                            <div class="nft-id">#${nft.tokenId}</div>
-                                        </div>
-                                    </div>
-                                `).join('')}
+            let html = '';
+            
+            for (const [chain, chainTokens] of Object.entries(tokensByChain)) {
+                const chainValue = chainTokens.reduce((sum, t) => sum + (t.usdValue || 0), 0);
+                
+                html += `
+                    <div class="chain-section">
+                        <div class="chain-header">
+                            <div class="chain-icon">ETH</div>
+                            <div class="chain-name">${chain.charAt(0).toUpperCase() + chain.slice(1)}</div>
+                            <div class="chain-value">$${numberWithCommas(chainValue.toFixed(2))}</div>
+                        </div>
+                        <div class="tokens-grid">
+                `;
+                
+                chainTokens.forEach(token => {
+                    const balance = parseFloat(token.balance);
+                    const displayBalance = balance < 0.0001 ? '<0.0001' : 
+                                         balance < 1 ? balance.toFixed(6) : 
+                                         balance < 1000 ? balance.toFixed(4) : 
+                                         numberWithCommas(balance.toFixed(2));
+                    
+                    html += `
+                        <div class="token-item">
+                            <div class="token-logo">
+                                ${token.logo ? `<img src="${token.logo}" onerror="this.style.display='none'; this.parentElement.innerHTML='${token.symbol.substring(0, 2)}'">` : token.symbol.substring(0, 2)}
+                            </div>
+                            <div class="token-details">
+                                <div class="token-name">${token.name}</div>
+                                <div class="token-symbol">
+                                    ${token.symbol}
+                                    ${token.isNative ? '<span class="token-chain-badge">Native</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="token-balance">
+                                <div class="token-amount">${displayBalance} ${token.symbol}</div>
+                                <div class="token-usd">$${numberWithCommas((token.usdValue || 0).toFixed(2))}</div>
                             </div>
                         </div>
                     `;
                 });
                 
-                document.getElementById('nftsTab').innerHTML = nftsHTML;
-            } else {
-                document.getElementById('nftsTab').innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No NFTs found in this wallet</p>';
-            }
-            
-            // Update stats
-            document.getElementById('totalValue').textContent = `$${numberWithCommas(data.totalValue.toFixed(2))}`;
-            document.getElementById('tokenCount').textContent = data.tokenCount;
-            document.getElementById('nftCount').textContent = data.nftCount;
-        }
-
-        function displayDemoData() {
-            // Show demo note
-            const demoNote = '<div class="demo-note">📊 Showing sample data - Backend server not connected</div>';
-            
-            // Load demo coins
-            const coinsHTML = demoNote + sampleCoins.map(token => {
-                const balance = parseFloat(token.balance).toFixed(4);
-                const usdValue = token.usdValue.toFixed(2);
-                return `
-                    <div class="coin-item">
-                        <div class="coin-icon">${token.symbol.substring(0, 2)}</div>
-                        <div class="coin-details">
-                            <div class="coin-name">${token.name}</div>
-                            <div class="coin-symbol">${token.symbol}</div>
-                        </div>
-                        <div class="coin-balance">
-                            <div class="coin-amount">${balance} ${token.symbol}</div>
-                            <div class="coin-usd">$${numberWithCommas(usdValue)}</div>
+                html += `
                         </div>
                     </div>
                 `;
-            }).join('');
+            }
             
-            document.getElementById('coinsTab').innerHTML = coinsHTML;
+            document.getElementById('tokensTab').innerHTML = html;
+        }
+
+        function displayNFTs(nfts) {
+            if (!nfts || nfts.length === 0) {
+                document.getElementById('nftsTab').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎨</div>
+                        <div class="empty-state-text">No NFTs found in this wallet</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Create tabs for each collection
+            let tabsHtml = '<div class="nft-collections-tabs">';
+            let contentHtml = '';
             
-            // Load demo NFTs
-            let nftsHTML = demoNote;
-            sampleNFTs.forEach(collection => {
-                nftsHTML += `
-                    <div class="collection">
-                        <div class="collection-header">${collection.name} (${collection.nfts.length})</div>
+            nfts.forEach((collection, index) => {
+                const isActive = index === 0;
+                const collectionId = `collection-${index}`;
+                
+                tabsHtml += `
+                    <button class="collection-tab ${isActive ? 'active' : ''}" 
+                            onclick="switchNFTCollection('${collectionId}', this)">
+                        ${collection.name}
+                        <span class="collection-count">${collection.nfts.length}</span>
+                    </button>
+                `;
+                
+                contentHtml += `
+                    <div id="${collectionId}" class="nft-collection-content ${isActive ? 'active' : ''}">
                         <div class="nft-grid">
                             ${collection.nfts.map(nft => `
                                 <div class="nft-item">
-                                    <div class="nft-image">🎨</div>
+                                    <div class="nft-image">
+                                        ${nft.image ? 
+                                            `<img src="${nft.image}" alt="${nft.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'nft-image-placeholder\\'>🎨</div>'">` : 
+                                            '<div class="nft-image-placeholder">🎨</div>'
+                                        }
+                                    </div>
                                     <div class="nft-details">
-                                        <div class="nft-name">${nft.name}</div>
+                                        <div class="nft-name" title="${nft.name}">${nft.name}</div>
                                         <div class="nft-id">#${nft.tokenId}</div>
                                     </div>
                                 </div>
@@ -633,25 +812,23 @@
                 `;
             });
             
-            document.getElementById('nftsTab').innerHTML = nftsHTML;
+            tabsHtml += '</div>';
             
-            // Update stats with demo data
-            const totalValue = sampleCoins.reduce((sum, token) => sum + token.usdValue, 0);
-            document.getElementById('totalValue').textContent = `$${numberWithCommas(totalValue.toFixed(2))}`;
-            document.getElementById('tokenCount').textContent = sampleCoins.length;
-            document.getElementById('nftCount').textContent = sampleNFTs.reduce((sum, c) => sum + c.nfts.length, 0);
-        }
-        
-        // Helper function to format numbers with commas
-        function numberWithCommas(x) {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            document.getElementById('nftsTab').innerHTML = tabsHtml + contentHtml;
         }
 
-        function switchTab(tab) {
-            currentTab = tab;
+        function updateStats(data) {
+            document.getElementById('totalValue').textContent = `$${numberWithCommas((data.totalValue || 0).toFixed(2))}`;
+            document.getElementById('tokenCount').textContent = data.tokenCount || 0;
+            document.getElementById('nftCount').textContent = data.nftCount || 0;
+            document.getElementById('chainCount').textContent = data.chains?.length || 1;
+        }
+
+        function switchMainTab(tab) {
+            currentMainTab = tab;
             
             // Update tab buttons
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             
             // Update tab content
@@ -659,10 +836,34 @@
             document.getElementById(tab + 'Tab').classList.add('active');
         }
 
+        function switchNFTCollection(collectionId, button) {
+            // Update tabs
+            document.querySelectorAll('.collection-tab').forEach(t => t.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.nft-collection-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(collectionId).classList.add('active');
+        }
+
         function goBack() {
             document.getElementById('landing').style.display = 'flex';
             document.getElementById('walletView').style.display = 'none';
             document.getElementById('searchInput').value = '';
+        }
+
+        function showError(message) {
+            const errorHtml = `
+                <div class="error">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+            document.getElementById('tokensTab').innerHTML = errorHtml;
+            document.getElementById('nftsTab').innerHTML = errorHtml;
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         // Allow Enter key to search
@@ -672,10 +873,7 @@
             }
         });
 
-        // Log setup status
-        console.log('eth.af is running!');
-        console.log('This version shows demo data.');
-        console.log('To connect real blockchain data, set up the backend server.');
+        console.log('eth.af v2.0 - Full token support, NFT images, and multi-chain ready!');
     </script>
 </body>
 </html>

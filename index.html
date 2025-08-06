@@ -770,6 +770,111 @@
             font-weight: 500;
         }
 
+        /* Activity Section */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            border: 2px solid #e8ecf1;
+            transition: all 0.3s ease;
+            gap: 20px;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.send {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .activity-icon.receive {
+            background: #dcfce7;
+            color: #10b981;
+        }
+
+        .activity-icon.contract {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .activity-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-method {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .activity-hash {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-value {
+            text-align: right;
+        }
+
+        .activity-amount {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1a1a2e;
+        }
+
+        .activity-time {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* NFT Floor Price Badge */
+        .floor-price-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .floor-price-badge.no-floor {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .logo {
@@ -889,9 +994,9 @@
             </div>
 
             <div id="activityTab" class="tab-content">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
-                    <div class="empty-state-text">Activity tracking coming soon! 🚧</div>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading recent transactions... 📊</p>
                 </div>
             </div>
         </div>
@@ -961,8 +1066,11 @@
                 // Display tokens with chain tabs
                 displayTokensWithChains(walletData);
                 
-                // Display NFTs with collection tabs
+                // Display NFTs with collection tabs and floor prices
                 displayNFTsWithTabs(walletData.nfts);
+                
+                // Display activity
+                displayActivity(walletData.activity);
                 
                 // Update stats
                 updateStats(walletData);
@@ -1092,6 +1200,9 @@
                 return;
             }
 
+            // Sort collections by floor price (highest first)
+            nfts.sort((a, b) => (b.floorPrice || 0) - (a.floorPrice || 0));
+
             // Create tabs for collections
             let tabsHtml = '<div class="nft-collections-tabs">';
             let contentHtml = '';
@@ -1099,20 +1210,30 @@
             nfts.forEach((collection, index) => {
                 const isActive = index === 0;
                 const collectionId = `collection-${index}`;
-                const chainEmoji = collection.chainEmoji || '🟦';
                 
                 tabsHtml += `
                     <button class="collection-tab ${isActive ? 'active' : ''}" 
                             onclick="switchNFTCollection('${collectionId}', this)">
                         ${collection.name}
                         <span class="collection-count">${collection.nfts.length}</span>
+                        ${collection.floorPrice > 0 ? 
+                            `<span class="floor-price-badge">⌊ ${collection.floorPrice} ETH</span>` : 
+                            ''
+                        }
                     </button>
                 `;
+                
+                // Sort NFTs: images first, then no images
+                const sortedNFTs = [...collection.nfts].sort((a, b) => {
+                    if (a.hasImage && !b.hasImage) return -1;
+                    if (!a.hasImage && b.hasImage) return 1;
+                    return 0;
+                });
                 
                 contentHtml += `
                     <div id="${collectionId}" class="nft-collection-content ${isActive ? 'active' : ''}">
                         <div class="nft-grid">
-                            ${collection.nfts.map(nft => `
+                            ${sortedNFTs.map(nft => `
                                 <div class="nft-item">
                                     <div class="nft-image">
                                         ${nft.image ? 
@@ -1134,6 +1255,81 @@
             tabsHtml += '</div>';
             
             document.getElementById('nftsTab').innerHTML = tabsHtml + contentHtml;
+        }
+
+        function displayActivity(activity) {
+            if (!activity || activity.length === 0) {
+                document.getElementById('activityTab').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <div class="empty-state-text">No recent activity found</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="activity-list">';
+            
+            activity.forEach(tx => {
+                const isReceive = tx.to?.toLowerCase() === walletData.address?.toLowerCase();
+                const isSend = tx.from?.toLowerCase() === walletData.address?.toLowerCase();
+                const value = parseFloat(tx.value);
+                
+                let icon, iconClass;
+                if (isReceive) {
+                    icon = '↓';
+                    iconClass = 'receive';
+                } else if (isSend) {
+                    icon = '↑';
+                    iconClass = 'send';
+                } else {
+                    icon = '📝';
+                    iconClass = 'contract';
+                }
+                
+                const timeAgo = getTimeAgo(new Date(tx.timestamp));
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-icon ${iconClass}">${icon}</div>
+                        <div class="activity-details">
+                            <div class="activity-method">${tx.method || 'Transfer'}</div>
+                            <div class="activity-hash" title="${tx.hash}">
+                                ${tx.hash.substring(0, 10)}...${tx.hash.substring(tx.hash.length - 8)}
+                            </div>
+                        </div>
+                        <div class="activity-value">
+                            ${value > 0 ? `<div class="activity-amount">${value.toFixed(4)} ETH</div>` : ''}
+                            <div class="activity-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            document.getElementById('activityTab').innerHTML = html;
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            
+            return Math.floor(seconds) + " seconds ago";
         }
 
         function updateStats(data) {

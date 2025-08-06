@@ -1030,14 +1030,23 @@
         }
 
         async function loadWalletData(address) {
+            // Set a timeout for the entire operation
+            const timeout = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Request timeout')), 30000)
+            );
+            
             try {
-                const response = await fetch(`${API_URL}/wallet/${address}`);
+                const fetchPromise = fetch(`${API_URL}/wallet/${address}`);
+                const response = await Promise.race([fetchPromise, timeout]);
                 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch wallet data');
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to fetch wallet data');
                 }
                 
                 walletData = await response.json();
+                
+                console.log(`Loaded wallet data in ${walletData.responseTime}ms`);
                 
                 // Update address and ENS display
                 displayAddressInfo(walletData);
@@ -1056,7 +1065,20 @@
                 
             } catch (error) {
                 console.error('Error loading wallet data:', error);
-                showError('Failed to load wallet data. Please try again! 😢');
+                
+                let errorMessage = 'Failed to load wallet data. ';
+                
+                if (error.message === 'Request timeout') {
+                    errorMessage = 'Request timed out. The wallet might have too many tokens or the server is slow. Please try again.';
+                } else if (error.message.includes('ENS')) {
+                    errorMessage = 'Could not resolve ENS name. Please check the name and try again.';
+                } else if (error.message.includes('Invalid')) {
+                    errorMessage = 'Invalid address or ENS name. Please check and try again.';
+                } else {
+                    errorMessage += error.message || 'Please try again.';
+                }
+                
+                showError(errorMessage);
             }
         }
 

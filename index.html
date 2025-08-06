@@ -222,7 +222,7 @@
         .wallet-header {
             background: var(--primary-gradient);
             color: white;
-            padding: 30px 35px;
+            padding: 25px 35px;
             position: relative;
             overflow: hidden;
         }
@@ -943,28 +943,7 @@
                     </div>
                     <div class="wallet-address" id="walletAddress"></div>
                 </div>
-                <div class="wallet-stats">
-                    <div class="stat">
-                        <span class="stat-emoji">💰</span>
-                        <div class="stat-label">Total Value</div>
-                        <div class="stat-value" id="totalValue">$0.00</div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-emoji">🪙</span>
-                        <div class="stat-label">Tokens</div>
-                        <div class="stat-value" id="tokenCount">0</div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-emoji">🎨</span>
-                        <div class="stat-label">NFTs</div>
-                        <div class="stat-value" id="nftCount">0</div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-emoji">⛓️</span>
-                        <div class="stat-label">Chains</div>
-                        <div class="stat-value" id="chainCount">0</div>
-                    </div>
-                </div>
+
             </div>
 
             <div class="main-tabs">
@@ -1200,8 +1179,7 @@
                 return;
             }
 
-            // Sort collections by floor price (highest first)
-            nfts.sort((a, b) => (b.floorPrice || 0) - (a.floorPrice || 0));
+            // Collections are already sorted by totalValue from backend
 
             // Create tabs for collections
             let tabsHtml = '<div class="nft-collections-tabs">';
@@ -1211,29 +1189,44 @@
                 const isActive = index === 0;
                 const collectionId = `collection-${index}`;
                 
+                // Calculate display values
+                const floorDisplay = collection.floorPrice > 0 
+                    ? `${collection.floorPrice.toFixed(3)} ETH` 
+                    : 'No floor data';
+                const totalValueDisplay = collection.totalValue > 0
+                    ? `(${(collection.totalValue).toFixed(2)} ETH total)`
+                    : '';
+                
                 tabsHtml += `
                     <button class="collection-tab ${isActive ? 'active' : ''}" 
                             onclick="switchNFTCollection('${collectionId}', this)">
                         ${collection.name}
                         <span class="collection-count">${collection.nfts.length}</span>
-                        ${collection.floorPrice > 0 ? 
-                            `<span class="floor-price-badge">⌊ ${collection.floorPrice} ETH</span>` : 
-                            ''
-                        }
                     </button>
                 `;
                 
-                // Sort NFTs: images first, then no images
-                const sortedNFTs = [...collection.nfts].sort((a, b) => {
-                    if (a.hasImage && !b.hasImage) return -1;
-                    if (!a.hasImage && b.hasImage) return 1;
-                    return 0;
-                });
-                
                 contentHtml += `
                     <div id="${collectionId}" class="nft-collection-content ${isActive ? 'active' : ''}">
+                        <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 15px;">
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px;">
+                                ${collection.name}
+                            </div>
+                            <div style="display: flex; gap: 20px; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 0.9rem; color: #6b7280;">Floor Price:</span>
+                                    <span style="font-size: 1rem; font-weight: 600; color: ${collection.floorPrice > 0 ? '#10b981' : '#9ca3af'};">
+                                        ${floorDisplay}
+                                    </span>
+                                </div>
+                                ${totalValueDisplay ? `
+                                    <div style="font-size: 0.9rem; color: #6b7280;">
+                                        ${totalValueDisplay}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
                         <div class="nft-grid">
-                            ${sortedNFTs.map(nft => `
+                            ${collection.nfts.map(nft => `
                                 <div class="nft-item">
                                     <div class="nft-image">
                                         ${nft.image ? 

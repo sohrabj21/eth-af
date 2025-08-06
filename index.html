@@ -309,6 +309,7 @@
             gap: 25px;
             position: relative;
             z-index: 1;
+            margin-top: 25px;
         }
 
         .stat {
@@ -943,7 +944,30 @@
                     </div>
                     <div class="wallet-address" id="walletAddress"></div>
                 </div>
-
+                
+                <!-- FIXED: Added the missing wallet-stats section -->
+                <div class="wallet-stats">
+                    <div class="stat">
+                        <span class="stat-emoji">💰</span>
+                        <div class="stat-label">Total Value</div>
+                        <div class="stat-value" id="totalValue">Loading...</div>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-emoji">🪙</span>
+                        <div class="stat-label">Tokens</div>
+                        <div class="stat-value" id="tokenCount">...</div>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-emoji">🎨</span>
+                        <div class="stat-label">NFTs</div>
+                        <div class="stat-value" id="nftCount">...</div>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-emoji">⛓️</span>
+                        <div class="stat-label">Chains</div>
+                        <div class="stat-value" id="chainCount">...</div>
+                    </div>
+                </div>
             </div>
 
             <div class="main-tabs">
@@ -1023,10 +1047,18 @@
         function resetLoadingStates() {
             document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all tokens from Ethereum & Base L2... 🚀</p></div>';
             document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading your NFT collections... 🎨</p></div>';
-            document.getElementById('totalValue').textContent = 'Loading...';
-            document.getElementById('tokenCount').textContent = '...';
-            document.getElementById('nftCount').textContent = '...';
-            document.getElementById('chainCount').textContent = '...';
+            document.getElementById('activityTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading recent transactions... 📊</p></div>';
+            
+            // FIXED: Check if elements exist before updating them
+            const totalValue = document.getElementById('totalValue');
+            const tokenCount = document.getElementById('tokenCount');
+            const nftCount = document.getElementById('nftCount');
+            const chainCount = document.getElementById('chainCount');
+            
+            if (totalValue) totalValue.textContent = 'Loading...';
+            if (tokenCount) tokenCount.textContent = '...';
+            if (nftCount) nftCount.textContent = '...';
+            if (chainCount) chainCount.textContent = '...';
         }
 
         async function loadWalletData(address) {
@@ -1036,6 +1068,7 @@
             );
             
             try {
+                console.log('Fetching wallet data for:', address);
                 const fetchPromise = fetch(`${API_URL}/wallet/${address}`);
                 const response = await Promise.race([fetchPromise, timeout]);
                 
@@ -1046,7 +1079,7 @@
                 
                 walletData = await response.json();
                 
-                console.log(`Loaded wallet data in ${walletData.responseTime}ms`);
+                console.log(`Loaded wallet data in ${walletData.responseTime}ms`, walletData);
                 
                 // Update address and ENS display
                 displayAddressInfo(walletData);
@@ -1348,10 +1381,24 @@
         }
 
         function updateStats(data) {
-            document.getElementById('totalValue').textContent = `$${numberWithCommas((data.totalValue || 0).toFixed(2))}`;
-            document.getElementById('tokenCount').textContent = data.tokenCount || 0;
-            document.getElementById('nftCount').textContent = data.nftCount || 0;
-            document.getElementById('chainCount').textContent = data.chainsWithBalance?.length || 0;
+            // FIXED: Check if elements exist before updating them
+            const totalValue = document.getElementById('totalValue');
+            const tokenCount = document.getElementById('tokenCount');
+            const nftCount = document.getElementById('nftCount');
+            const chainCount = document.getElementById('chainCount');
+            
+            if (totalValue) {
+                totalValue.textContent = `$${numberWithCommas((data.totalValue || 0).toFixed(2))}`;
+            }
+            if (tokenCount) {
+                tokenCount.textContent = data.tokenCount || 0;
+            }
+            if (nftCount) {
+                nftCount.textContent = data.nftCount || 0;
+            }
+            if (chainCount) {
+                chainCount.textContent = data.chainsWithBalance?.length || 0;
+            }
         }
 
         function switchMainTab(tab) {
@@ -1391,6 +1438,7 @@
             `;
             document.getElementById('tokensTab').innerHTML = errorHtml;
             document.getElementById('nftsTab').innerHTML = errorHtml;
+            document.getElementById('activityTab').innerHTML = errorHtml;
         }
 
         function formatBalance(balance, symbol) {

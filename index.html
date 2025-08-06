@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eth.af - Advanced Ethereum Wallet Explorer</title>
+    <title>eth.af - The Fun Ethereum & Base Explorer 🚀</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,17 +14,52 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --fun-gradient: linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);
+            --hover-scale: 1.05;
+            --ethereum-blue: #627EEA;
+            --base-blue: #0052FF;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
-            color: #333;
+            color: #1a1a2e;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(250, 139, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(43, 210, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(43, 255, 136, 0.2) 0%, transparent 50%);
+            animation: floatingGradient 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes floatingGradient {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(120deg); }
+            66% { transform: translate(20px, -10px) rotate(240deg); }
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Landing Page */
@@ -34,147 +72,291 @@
             text-align: center;
         }
 
+        .logo-link {
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.1) rotate(-2deg);
+        }
+
         .logo {
-            font-size: 5rem;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 8rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            background: linear-gradient(45deg, #fff, #FA8BFF, #2BD2FF, #2BFF88, #fff);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            letter-spacing: -2px;
+            background-clip: text;
+            margin-bottom: 0;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 40px rgba(255,255,255,0.5);
+            animation: gradientShift 3s ease infinite;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .logo-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
         }
 
         .tagline {
             color: rgba(255,255,255,0.95);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             margin-bottom: 50px;
-            font-weight: 300;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .tagline .emoji {
+            font-size: 1.6rem;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .search-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
         }
 
         .search-bar {
             width: 100%;
-            padding: 22px 35px;
+            padding: 24px 35px;
             font-size: 1.15rem;
             border: none;
-            border-radius: 60px;
-            background: rgba(255,255,255,0.98);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            border-radius: 100px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.15),
+                inset 0 0 0 2px transparent;
             transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         .search-bar:focus {
             outline: none;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            transform: translateY(-2px);
             background: white;
+            box-shadow: 
+                0 25px 70px rgba(0,0,0,0.2),
+                inset 0 0 0 2px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-bar::placeholder {
+            color: #999;
+            font-weight: 400;
         }
 
         .search-btn {
             margin-top: 25px;
-            padding: 16px 45px;
+            padding: 18px 50px;
             font-size: 1.15rem;
             background: white;
             color: #667eea;
             border: none;
-            border-radius: 60px;
+            border-radius: 100px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .search-btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .search-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.18);
-            background: #f8f8f8;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            color: #764ba2;
         }
 
         /* Wallet View */
         .wallet-view {
             display: none;
-            background: #f7f8fa;
-            border-radius: 24px;
+            background: #ffffff;
+            border-radius: 30px;
             margin-top: 40px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.13);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
             overflow: hidden;
+            position: relative;
         }
 
         .wallet-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
-            padding: 35px;
+            padding: 30px 35px;
             position: relative;
             overflow: hidden;
         }
 
         .wallet-header::before {
-            content: '';
+            content: '💎';
             position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 60%;
-            height: 200%;
-            background: rgba(255,255,255,0.05);
-            transform: rotate(35deg);
+            top: 20px;
+            right: 30px;
+            font-size: 4rem;
+            opacity: 0.1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .address-container {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .ens-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ens-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
 
         .wallet-address {
-            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-            font-size: 1.05rem;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
             word-break: break-all;
-            opacity: 0.95;
+            opacity: 0.85;
             font-weight: 500;
             letter-spacing: 0.5px;
         }
 
         .wallet-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 30px;
-            margin-top: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 25px;
             position: relative;
             z-index: 1;
         }
 
         .stat {
-            display: flex;
-            flex-direction: column;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-3px);
+        }
+
+        .stat-emoji {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .stat-label {
-            font-size: 0.85rem;
-            opacity: 0.85;
+            font-size: 0.8rem;
+            opacity: 0.9;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 500;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 8px;
+            font-size: 1.6rem;
+            font-weight: 800;
             letter-spacing: -0.5px;
         }
 
         /* Main Tabs */
         .main-tabs {
             display: flex;
-            background: white;
-            border-bottom: 1px solid #e8ecf1;
-            padding: 0 20px;
+            background: #f8f9fb;
+            border-bottom: 2px solid #e8ecf1;
+            padding: 0 25px;
+            gap: 10px;
         }
 
         .main-tab {
-            flex: 1;
-            padding: 22px;
+            padding: 20px 30px;
             background: none;
             border: none;
             font-size: 1.05rem;
@@ -182,33 +364,32 @@
             position: relative;
             transition: all 0.3s ease;
             color: #6b7280;
-            font-weight: 500;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 20px 20px 0 0;
         }
 
         .main-tab:hover {
             color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
         }
 
         .main-tab.active {
-            color: #667eea;
-            font-weight: 600;
+            color: white;
+            background: var(--primary-gradient);
+            box-shadow: 0 -5px 20px rgba(102, 126, 234, 0.2);
         }
 
-        .main-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 20%;
-            right: 20%;
-            height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 3px 3px 0 0;
+        .tab-emoji {
+            font-size: 1.3rem;
         }
 
         .tab-content {
             padding: 30px;
             display: none;
-            background: white;
+            background: #fafbfc;
             min-height: 400px;
         }
 
@@ -217,79 +398,111 @@
         }
 
         /* Coins Section */
+        .chain-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8ecf1;
+        }
+
+        .chain-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #e8ecf1;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .chain-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .chain-tab.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .chain-emoji {
+            font-size: 1.2rem;
+        }
+
         .tokens-grid {
             display: grid;
-            gap: 12px;
+            gap: 15px;
+            animation: fadeInUp 0.5s ease;
         }
 
-        .chain-section {
-            margin-bottom: 35px;
-        }
-
-        .chain-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f3f4f6;
-        }
-
-        .chain-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .chain-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .chain-value {
-            margin-left: auto;
-            font-size: 1.1rem;
-            color: #6b7280;
-            font-weight: 600;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .token-item {
             display: flex;
             align-items: center;
-            padding: 18px 22px;
-            border-radius: 16px;
-            background: #f9fafb;
+            padding: 20px 25px;
+            border-radius: 20px;
+            background: white;
             transition: all 0.3s ease;
-            border: 1px solid #e5e7eb;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .token-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .token-item:hover {
-            background: #f3f4f6;
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #e8ecf1;
+        }
+
+        .token-item:hover::before {
+            opacity: 1;
         }
 
         .token-logo {
-            width: 42px;
-            height: 42px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: var(--primary-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
-            margin-right: 18px;
-            font-size: 14px;
+            margin-right: 20px;
+            font-size: 16px;
             flex-shrink: 0;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .token-logo img {
@@ -299,33 +512,40 @@
             object-fit: cover;
         }
 
+        .chain-indicator {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
         .token-details {
             flex: 1;
             min-width: 0;
         }
 
         .token-name {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1.05rem;
-            color: #1f2937;
-            margin-bottom: 3px;
+            color: #1a1a2e;
+            margin-bottom: 4px;
         }
 
         .token-symbol {
             color: #6b7280;
             font-size: 0.9rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .token-chain-badge {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #e5e7eb;
-            color: #4b5563;
-            font-weight: 600;
         }
 
         .token-balance {
@@ -334,9 +554,9 @@
 
         .token-amount {
             font-weight: 700;
-            font-size: 1.05rem;
-            color: #1f2937;
-            margin-bottom: 3px;
+            font-size: 1.1rem;
+            color: #1a1a2e;
+            margin-bottom: 4px;
         }
 
         .token-usd {
@@ -345,94 +565,103 @@
             font-weight: 600;
         }
 
-        /* NFT Collections Tabs */
+        .token-usd.negative {
+            color: #ef4444;
+        }
+
+        /* NFT Section */
         .nft-collections-tabs {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 25px;
             flex-wrap: wrap;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .collection-tab {
-            padding: 10px 20px;
+            padding: 10px 18px;
             background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
+            border: 2px solid transparent;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
             color: #4b5563;
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         }
 
         .collection-tab:hover {
             background: #e5e7eb;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         .collection-tab.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: var(--primary-gradient);
             color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
         }
 
         .collection-count {
             background: rgba(0,0,0,0.1);
             padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
         }
 
         .collection-tab.active .collection-count {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.25);
         }
 
-        /* NFT Grid */
         .nft-collection-content {
             display: none;
         }
 
         .nft-collection-content.active {
             display: block;
+            animation: fadeInUp 0.5s ease;
         }
 
         .nft-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 18px;
         }
 
         .nft-item {
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
             background: white;
             transition: all 0.3s ease;
             cursor: pointer;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
         }
 
         .nft-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
         }
 
         .nft-image {
             width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #667eea20, #764ba220);
+            height: 150px;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #667eea;
-            font-size: 3rem;
+            font-size: 2.5rem;
             position: relative;
             overflow: hidden;
         }
@@ -441,22 +670,23 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
         }
 
-        .nft-image-placeholder {
-            font-size: 3rem;
+        .nft-item:hover .nft-image img {
+            transform: scale(1.1);
         }
 
         .nft-details {
-            padding: 15px;
+            padding: 12px;
             background: white;
         }
 
         .nft-name {
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 6px;
-            font-size: 0.95rem;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -464,25 +694,41 @@
 
         .nft-id {
             color: #6b7280;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
         }
 
-        /* Loading and Error States */
+        /* Loading and Empty States */
         .loading {
             text-align: center;
-            padding: 60px;
+            padding: 80px;
             color: #6b7280;
         }
 
         .spinner {
-            border: 3px solid #f3f4f6;
-            border-top: 3px solid #667eea;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .spinner::before,
+        .spinner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            border: 3px solid transparent;
+            border-top-color: #667eea;
             animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
+        }
+
+        .spinner::after {
+            border-top-color: #764ba2;
+            animation-delay: 0.5s;
         }
 
         @keyframes spin {
@@ -490,53 +736,44 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error {
-            background: #fef2f2;
-            color: #991b1b;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border: 1px solid #fecaca;
-        }
-
-        .back-btn {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-            padding: 12px 25px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .back-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(-5px);
-        }
-
         .empty-state {
             text-align: center;
-            padding: 60px;
-            color: #6b7280;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        .empty-state-text {
-            font-size: 1.1rem;
+            padding: 80px;
             color: #9ca3af;
         }
 
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+
+        .empty-state-text {
+            font-size: 1.2rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: #991b1b;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+            border: 2px solid #fecaca;
+            font-weight: 500;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .logo {
-                font-size: 3.5rem;
+                font-size: 5rem;
             }
             
             .wallet-stats {
@@ -544,7 +781,17 @@
             }
             
             .nft-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .main-tabs {
+                padding: 0 15px;
+                gap: 5px;
+            }
+            
+            .main-tab {
+                padding: 15px 20px;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -553,69 +800,98 @@
     <div class="container">
         <!-- Landing Page -->
         <div id="landing" class="landing">
-            <h1 class="logo">eth.af</h1>
-            <p class="tagline">Multi-Chain Wallet Explorer with Full Token & NFT Support</p>
+            <a href="https://domains.atom.com/lpd/name/eth.af" target="_blank" class="logo-link">
+                <h1 class="logo">eth.af</h1>
+            </a>
+            <p class="logo-subtitle">Get this domain →</p>
+            <p class="tagline">
+                <span class="emoji">🚀</span> 
+                Multi-Chain Wallet Explorer 
+                <span class="emoji">💎</span>
+            </p>
             <div class="search-container">
                 <input 
                     type="text" 
                     id="searchInput" 
                     class="search-bar" 
-                    placeholder="Enter Ethereum address (0x...) or ENS name"
+                    placeholder="Enter Ethereum address (0x...) or ENS name (.eth)"
                     spellcheck="false"
                 >
-                <button onclick="searchWallet()" class="search-btn">Explore Wallet</button>
+                <button onclick="searchWallet()" class="search-btn">
+                    🔍 Explore Wallet
+                </button>
             </div>
         </div>
 
         <!-- Wallet View -->
         <div id="walletView" class="wallet-view">
             <div class="wallet-header">
-                <button onclick="goBack()" class="back-btn">← New Search</button>
-                <div class="wallet-address" id="walletAddress"></div>
+                <div class="header-top">
+                    <button onclick="goBack()" class="back-btn">
+                        ← New Search
+                    </button>
+                </div>
+                <div class="address-container">
+                    <div id="ensNameContainer" class="ens-name" style="display: none;">
+                        <span id="ensName"></span>
+                        <span class="ens-badge">ENS</span>
+                    </div>
+                    <div class="wallet-address" id="walletAddress"></div>
+                </div>
                 <div class="wallet-stats">
                     <div class="stat">
-                        <span class="stat-label">Total Value</span>
-                        <span class="stat-value" id="totalValue">$0.00</span>
+                        <span class="stat-emoji">💰</span>
+                        <div class="stat-label">Total Value</div>
+                        <div class="stat-value" id="totalValue">$0.00</div>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Tokens</span>
-                        <span class="stat-value" id="tokenCount">0</span>
+                        <span class="stat-emoji">🪙</span>
+                        <div class="stat-label">Tokens</div>
+                        <div class="stat-value" id="tokenCount">0</div>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">NFTs</span>
-                        <span class="stat-value" id="nftCount">0</span>
+                        <span class="stat-emoji">🎨</span>
+                        <div class="stat-label">NFTs</div>
+                        <div class="stat-value" id="nftCount">0</div>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Chains</span>
-                        <span class="stat-value" id="chainCount">1</span>
+                        <span class="stat-emoji">⛓️</span>
+                        <div class="stat-label">Chains</div>
+                        <div class="stat-value" id="chainCount">0</div>
                     </div>
                 </div>
             </div>
 
             <div class="main-tabs">
-                <button class="main-tab active" onclick="switchMainTab('tokens')">🪙 Tokens</button>
-                <button class="main-tab" onclick="switchMainTab('nfts')">🎨 NFTs</button>
-                <button class="main-tab" onclick="switchMainTab('activity')">📊 Activity</button>
+                <button class="main-tab active" onclick="switchMainTab('tokens')">
+                    <span class="tab-emoji">🪙</span> Tokens
+                </button>
+                <button class="main-tab" onclick="switchMainTab('nfts')">
+                    <span class="tab-emoji">🎨</span> NFTs
+                </button>
+                <button class="main-tab" onclick="switchMainTab('activity')">
+                    <span class="tab-emoji">📊</span> Activity
+                </button>
             </div>
 
             <div id="tokensTab" class="tab-content active">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading all tokens across chains...</p>
+                    <p>Loading all tokens from Ethereum & Base L2... 🚀</p>
                 </div>
             </div>
 
             <div id="nftsTab" class="tab-content">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading NFT collections...</p>
+                    <p>Loading your NFT collections... 🎨</p>
                 </div>
             </div>
 
             <div id="activityTab" class="tab-content">
                 <div class="empty-state">
                     <div class="empty-state-icon">📊</div>
-                    <div class="empty-state-text">Activity tracking coming soon!</div>
+                    <div class="empty-state-text">Activity tracking coming soon! 🚧</div>
                 </div>
             </div>
         </div>
@@ -628,7 +904,7 @@
             : 'https://eth-af-backend.onrender.com/api';
 
         let currentMainTab = 'tokens';
-        let currentNFTCollection = null;
+        let currentChain = 'all';
         let walletData = null;
 
         function isValidAddress(address) {
@@ -639,12 +915,12 @@
             const input = document.getElementById('searchInput').value.trim();
             
             if (!input) {
-                alert('Please enter an Ethereum address or ENS name');
+                alert('Please enter an Ethereum address or ENS name! 🔍');
                 return;
             }
 
             if (!isValidAddress(input)) {
-                alert('Please enter a valid Ethereum address (0x...) or ENS name (.eth)');
+                alert('Please enter a valid Ethereum address (0x...) or ENS name (.eth) 🤔');
                 return;
             }
 
@@ -661,8 +937,8 @@
         }
 
         function resetLoadingStates() {
-            document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all tokens across chains...</p></div>';
-            document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading NFT collections...</p></div>';
+            document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all tokens from Ethereum & Base L2... 🚀</p></div>';
+            document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading your NFT collections... 🎨</p></div>';
             document.getElementById('totalValue').textContent = 'Loading...';
             document.getElementById('tokenCount').textContent = '...';
             document.getElementById('nftCount').textContent = '...';
@@ -671,7 +947,6 @@
 
         async function loadWalletData(address) {
             try {
-                // Try multi-chain endpoint first, fallback to regular
                 const response = await fetch(`${API_URL}/wallet/${address}`);
                 
                 if (!response.ok) {
@@ -680,26 +955,37 @@
                 
                 walletData = await response.json();
                 
-                // Update address (in case ENS was resolved)
-                document.getElementById('walletAddress').textContent = walletData.address;
+                // Update address and ENS display
+                displayAddressInfo(walletData);
                 
-                // Display tokens
-                displayTokens(walletData.tokens);
+                // Display tokens with chain tabs
+                displayTokensWithChains(walletData);
                 
-                // Display NFTs
-                displayNFTs(walletData.nfts);
+                // Display NFTs with collection tabs
+                displayNFTsWithTabs(walletData.nfts);
                 
                 // Update stats
                 updateStats(walletData);
                 
             } catch (error) {
                 console.error('Error loading wallet data:', error);
-                showError('Failed to load wallet data. Please try again.');
+                showError('Failed to load wallet data. Please try again! 😢');
             }
         }
 
-        function displayTokens(tokens) {
-            if (!tokens || tokens.length === 0) {
+        function displayAddressInfo(data) {
+            document.getElementById('walletAddress').textContent = data.address;
+            
+            if (data.ensName) {
+                document.getElementById('ensNameContainer').style.display = 'flex';
+                document.getElementById('ensName').textContent = data.ensName;
+            } else {
+                document.getElementById('ensNameContainer').style.display = 'none';
+            }
+        }
+
+        function displayTokensWithChains(data) {
+            if (!data.tokens || data.tokens.length === 0) {
                 document.getElementById('tokensTab').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">🪙</div>
@@ -709,61 +995,93 @@
                 return;
             }
 
-            // Group tokens by chain (for now just Ethereum)
-            const tokensByChain = { ethereum: tokens };
-            
-            let html = '';
-            
-            for (const [chain, chainTokens] of Object.entries(tokensByChain)) {
-                const chainValue = chainTokens.reduce((sum, t) => sum + (t.usdValue || 0), 0);
-                
-                html += `
-                    <div class="chain-section">
-                        <div class="chain-header">
-                            <div class="chain-icon">ETH</div>
-                            <div class="chain-name">${chain.charAt(0).toUpperCase() + chain.slice(1)}</div>
-                            <div class="chain-value">$${numberWithCommas(chainValue.toFixed(2))}</div>
-                        </div>
-                        <div class="tokens-grid">
-                `;
-                
-                chainTokens.forEach(token => {
-                    const balance = parseFloat(token.balance);
-                    const displayBalance = balance < 0.0001 ? '<0.0001' : 
-                                         balance < 1 ? balance.toFixed(6) : 
-                                         balance < 1000 ? balance.toFixed(4) : 
-                                         numberWithCommas(balance.toFixed(2));
-                    
-                    html += `
-                        <div class="token-item">
-                            <div class="token-logo">
-                                ${token.logo ? `<img src="${token.logo}" onerror="this.style.display='none'; this.parentElement.innerHTML='${token.symbol.substring(0, 2)}'">` : token.symbol.substring(0, 2)}
-                            </div>
-                            <div class="token-details">
-                                <div class="token-name">${token.name}</div>
-                                <div class="token-symbol">
-                                    ${token.symbol}
-                                    ${token.isNative ? '<span class="token-chain-badge">Native</span>' : ''}
-                                </div>
-                            </div>
-                            <div class="token-balance">
-                                <div class="token-amount">${displayBalance} ${token.symbol}</div>
-                                <div class="token-usd">$${numberWithCommas((token.usdValue || 0).toFixed(2))}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
+            const ethereumTokens = data.tokensByChain?.ethereum || [];
+            const baseTokens = data.tokensByChain?.base || [];
+            const allTokens = data.tokens;
+
+            let html = `
+                <div class="chain-tabs">
+                    <button class="chain-tab active" onclick="filterByChain('all', this)">
+                        <span class="chain-emoji">🌐</span> All Chains
+                    </button>
+                    ${ethereumTokens.length > 0 ? `
+                        <button class="chain-tab" onclick="filterByChain('ethereum', this)">
+                            <span class="chain-emoji">🟦</span> Ethereum (${ethereumTokens.length})
+                        </button>
+                    ` : ''}
+                    ${baseTokens.length > 0 ? `
+                        <button class="chain-tab" onclick="filterByChain('base', this)">
+                            <span class="chain-emoji">🔵</span> Base L2 (${baseTokens.length})
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="tokens-grid" id="tokensGrid">
+            `;
+
+            // Display all tokens initially
+            allTokens.forEach(token => {
+                html += createTokenHTML(token);
+            });
+
+            html += '</div>';
             
             document.getElementById('tokensTab').innerHTML = html;
+            
+            // Store data for filtering
+            window.tokenData = {
+                all: allTokens,
+                ethereum: ethereumTokens,
+                base: baseTokens
+            };
         }
 
-        function displayNFTs(nfts) {
+        function createTokenHTML(token) {
+            const displayBalance = formatBalance(token.balance, token.symbol);
+            const chainEmoji = token.chainEmoji || (token.chain === 'base' ? '🔵' : '🟦');
+            
+            return `
+                <div class="token-item" data-chain="${token.chain}">
+                    <div class="token-logo">
+                        ${token.logo ? 
+                            `<img src="${token.logo}" alt="${token.symbol}" onerror="this.style.display='none'; this.parentElement.innerHTML='${token.symbol.substring(0, 2)}'">` : 
+                            token.symbol.substring(0, 2)
+                        }
+                        <div class="chain-indicator">${chainEmoji}</div>
+                    </div>
+                    <div class="token-details">
+                        <div class="token-name">${token.name}</div>
+                        <div class="token-symbol">
+                            ${token.symbol}
+                            ${token.isNative ? '• Native' : ''}
+                        </div>
+                    </div>
+                    <div class="token-balance">
+                        <div class="token-amount">${displayBalance}</div>
+                        <div class="token-usd ${token.usdValue < 0 ? 'negative' : ''}">
+                            $${numberWithCommas((token.usdValue || 0).toFixed(2))}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterByChain(chain, button) {
+            // Update active tab
+            document.querySelectorAll('.chain-tab').forEach(tab => tab.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Filter tokens
+            const tokens = window.tokenData[chain] || [];
+            let html = '';
+            
+            tokens.forEach(token => {
+                html += createTokenHTML(token);
+            });
+            
+            document.getElementById('tokensGrid').innerHTML = html || '<div class="empty-state">No tokens on this chain</div>';
+        }
+
+        function displayNFTsWithTabs(nfts) {
             if (!nfts || nfts.length === 0) {
                 document.getElementById('nftsTab').innerHTML = `
                     <div class="empty-state">
@@ -774,13 +1092,14 @@
                 return;
             }
 
-            // Create tabs for each collection
+            // Create tabs for collections
             let tabsHtml = '<div class="nft-collections-tabs">';
             let contentHtml = '';
             
             nfts.forEach((collection, index) => {
                 const isActive = index === 0;
                 const collectionId = `collection-${index}`;
+                const chainEmoji = collection.chainEmoji || '🟦';
                 
                 tabsHtml += `
                     <button class="collection-tab ${isActive ? 'active' : ''}" 
@@ -797,13 +1116,13 @@
                                 <div class="nft-item">
                                     <div class="nft-image">
                                         ${nft.image ? 
-                                            `<img src="${nft.image}" alt="${nft.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'nft-image-placeholder\\'>🎨</div>'">` : 
-                                            '<div class="nft-image-placeholder">🎨</div>'
+                                            `<img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='🖼️'">` : 
+                                            '🖼️'
                                         }
                                     </div>
                                     <div class="nft-details">
                                         <div class="nft-name" title="${nft.name}">${nft.name}</div>
-                                        <div class="nft-id">#${nft.tokenId}</div>
+                                        <div class="nft-id">#${nft.tokenId.length > 8 ? nft.tokenId.substring(0, 8) + '...' : nft.tokenId}</div>
                                     </div>
                                 </div>
                             `).join('')}
@@ -821,7 +1140,7 @@
             document.getElementById('totalValue').textContent = `$${numberWithCommas((data.totalValue || 0).toFixed(2))}`;
             document.getElementById('tokenCount').textContent = data.tokenCount || 0;
             document.getElementById('nftCount').textContent = data.nftCount || 0;
-            document.getElementById('chainCount').textContent = data.chains?.length || 1;
+            document.getElementById('chainCount').textContent = data.chainsWithBalance?.length || 0;
         }
 
         function switchMainTab(tab) {
@@ -829,7 +1148,7 @@
             
             // Update tab buttons
             document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            event.target.closest('.main-tab').classList.add('active');
             
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -850,16 +1169,28 @@
             document.getElementById('landing').style.display = 'flex';
             document.getElementById('walletView').style.display = 'none';
             document.getElementById('searchInput').value = '';
+            currentChain = 'all';
         }
 
         function showError(message) {
             const errorHtml = `
                 <div class="error">
-                    <strong>Error:</strong> ${message}
+                    <strong>Oops!</strong> ${message}
                 </div>
             `;
             document.getElementById('tokensTab').innerHTML = errorHtml;
             document.getElementById('nftsTab').innerHTML = errorHtml;
+        }
+
+        function formatBalance(balance, symbol) {
+            const bal = parseFloat(balance);
+            if (bal === 0) return '0';
+            if (bal < 0.000001) return '<0.000001';
+            if (bal < 0.01) return bal.toFixed(6);
+            if (bal < 1) return bal.toFixed(4);
+            if (bal < 10000) return numberWithCommas(bal.toFixed(2));
+            if (bal < 1000000) return `${(bal / 1000).toFixed(2)}K`;
+            return `${(bal / 1000000).toFixed(2)}M`;
         }
 
         function numberWithCommas(x) {
@@ -873,7 +1204,9 @@
             }
         });
 
-        console.log('eth.af v2.0 - Full token support, NFT images, and multi-chain ready!');
+        console.log('🚀 eth.af v3.0 - Full Ethereum & Base support with fun UI!');
+        console.log('💎 Features: All ERC-20 tokens, NFT collections, ENS names');
+        console.log('🎨 Made with love and lots of emojis!');
     </script>
 </body>
 </html>

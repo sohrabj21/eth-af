@@ -347,6 +347,15 @@
             background: #667eea;
             color: white;
         }
+
+        .demo-note {
+            background: #e8f4ff;
+            color: #0066cc;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -413,29 +422,43 @@
     <script>
         let currentTab = 'coins';
 
-        // Sample data for demonstration
+        // Backend API configuration
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3001/api' 
+            : 'https://your-backend-url.com/api'; // Replace with your deployed backend URL
+
+        // Sample data for demonstration when backend is not available
         const sampleCoins = [
-            { name: 'Ethereum', symbol: 'ETH', balance: '5.234', usd: '10,468.00' },
-            { name: 'USD Coin', symbol: 'USDC', balance: '2,500.00', usd: '2,500.00' },
-            { name: 'Wrapped Bitcoin', symbol: 'WBTC', balance: '0.15', usd: '6,750.00' },
-            { name: 'Chainlink', symbol: 'LINK', balance: '150.00', usd: '1,125.00' },
-            { name: 'Uniswap', symbol: 'UNI', balance: '100.00', usd: '650.00' }
+            { name: 'Ethereum', symbol: 'ETH', balance: '5.234', usdValue: 10468.00 },
+            { name: 'USD Coin', symbol: 'USDC', balance: '2500.00', usdValue: 2500.00 },
+            { name: 'Wrapped Bitcoin', symbol: 'WBTC', balance: '0.15', usdValue: 6750.00 },
+            { name: 'Chainlink', symbol: 'LINK', balance: '150.00', usdValue: 1125.00 },
+            { name: 'Uniswap', symbol: 'UNI', balance: '100.00', usdValue: 650.00 }
         ];
 
-        const sampleNFTs = {
-            'Bored Ape Yacht Club': [
-                { name: 'BAYC', id: '#8734' },
-                { name: 'BAYC', id: '#2140' }
-            ],
-            'CryptoPunks': [
-                { name: 'CryptoPunk', id: '#5822' }
-            ],
-            'Art Blocks': [
-                { name: 'Chromie Squiggle', id: '#145' },
-                { name: 'Fidenza', id: '#78' },
-                { name: 'Ringers', id: '#962' }
-            ]
-        };
+        const sampleNFTs = [
+            {
+                name: 'Bored Ape Yacht Club',
+                nfts: [
+                    { name: 'BAYC', tokenId: '8734' },
+                    { name: 'BAYC', tokenId: '2140' }
+                ]
+            },
+            {
+                name: 'CryptoPunks',
+                nfts: [
+                    { name: 'CryptoPunk', tokenId: '5822' }
+                ]
+            },
+            {
+                name: 'Art Blocks',
+                nfts: [
+                    { name: 'Chromie Squiggle', tokenId: '145' },
+                    { name: 'Fidenza', tokenId: '78' },
+                    { name: 'Ringers', tokenId: '962' }
+                ]
+            }
+        ];
 
         function isValidAddress(address) {
             return /^0x[a-fA-F0-9]{40}$/.test(address) || /\.eth$/.test(address);
@@ -454,62 +477,174 @@
                 return;
             }
 
-            // Show wallet view
+            // Show wallet view with loading state
             document.getElementById('landing').style.display = 'none';
             document.getElementById('walletView').style.display = 'block';
             
-            // Set address
+            // Set initial loading state
             document.getElementById('walletAddress').textContent = input;
+            document.getElementById('coinsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading wallet data...</p></div>';
+            document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading NFT collection...</p></div>';
             
-            // Load data (simulated)
-            setTimeout(() => loadWalletData(input), 1000);
+            // Reset stats during loading
+            document.getElementById('totalValue').textContent = 'Loading...';
+            document.getElementById('tokenCount').textContent = '...';
+            document.getElementById('nftCount').textContent = '...';
+            
+            // Load data from API
+            await loadWalletData(input);
         }
 
-        function loadWalletData(address) {
+        async function loadWalletData(address) {
+            // Check if we should use real API or demo data
+            const useRealAPI = API_URL !== 'https://your-backend-url.com/api';
+            
+            if (useRealAPI) {
+                try {
+                    // Fetch data from backend
+                    const response = await fetch(`${API_URL}/wallet/${address}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch wallet data');
+                    }
+                    
+                    const data = await response.json();
+                    displayRealData(data);
+                    
+                } catch (error) {
+                    console.error('Error loading wallet data:', error);
+                    // Fall back to demo data
+                    displayDemoData();
+                }
+            } else {
+                // Use demo data
+                displayDemoData();
+            }
+        }
+
+        function displayRealData(data) {
+            // Update wallet address (in case ENS was resolved)
+            document.getElementById('walletAddress').textContent = data.address;
+            
             // Load coins
-            const coinsHTML = sampleCoins.map(coin => `
-                <div class="coin-item">
-                    <div class="coin-icon">${coin.symbol.substring(0, 2)}</div>
-                    <div class="coin-details">
-                        <div class="coin-name">${coin.name}</div>
-                        <div class="coin-symbol">${coin.symbol}</div>
+            if (data.tokens && data.tokens.length > 0) {
+                const coinsHTML = data.tokens.map(token => {
+                    const balance = parseFloat(token.balance).toFixed(4);
+                    const usdValue = token.usdValue ? token.usdValue.toFixed(2) : '0.00';
+                    return `
+                        <div class="coin-item">
+                            <div class="coin-icon">${token.symbol.substring(0, 2)}</div>
+                            <div class="coin-details">
+                                <div class="coin-name">${token.name}</div>
+                                <div class="coin-symbol">${token.symbol}</div>
+                            </div>
+                            <div class="coin-balance">
+                                <div class="coin-amount">${balance} ${token.symbol}</div>
+                                <div class="coin-usd">$${numberWithCommas(usdValue)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('coinsTab').innerHTML = coinsHTML;
+            } else {
+                document.getElementById('coinsTab').innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No tokens found in this wallet</p>';
+            }
+            
+            // Load NFTs
+            if (data.nfts && data.nfts.length > 0) {
+                let nftsHTML = '';
+                data.nfts.forEach(collection => {
+                    nftsHTML += `
+                        <div class="collection">
+                            <div class="collection-header">${collection.name} (${collection.nfts.length})</div>
+                            <div class="nft-grid">
+                                ${collection.nfts.map(nft => `
+                                    <div class="nft-item">
+                                        ${nft.image 
+                                            ? `<img src="${nft.image}" class="nft-image" style="object-fit: cover;" alt="${nft.name}">`
+                                            : '<div class="nft-image">🎨</div>'
+                                        }
+                                        <div class="nft-details">
+                                            <div class="nft-name">${nft.name}</div>
+                                            <div class="nft-id">#${nft.tokenId}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('nftsTab').innerHTML = nftsHTML;
+            } else {
+                document.getElementById('nftsTab').innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No NFTs found in this wallet</p>';
+            }
+            
+            // Update stats
+            document.getElementById('totalValue').textContent = `$${numberWithCommas(data.totalValue.toFixed(2))}`;
+            document.getElementById('tokenCount').textContent = data.tokenCount;
+            document.getElementById('nftCount').textContent = data.nftCount;
+        }
+
+        function displayDemoData() {
+            // Show demo note
+            const demoNote = '<div class="demo-note">📊 Showing sample data - Backend server not connected</div>';
+            
+            // Load demo coins
+            const coinsHTML = demoNote + sampleCoins.map(token => {
+                const balance = parseFloat(token.balance).toFixed(4);
+                const usdValue = token.usdValue.toFixed(2);
+                return `
+                    <div class="coin-item">
+                        <div class="coin-icon">${token.symbol.substring(0, 2)}</div>
+                        <div class="coin-details">
+                            <div class="coin-name">${token.name}</div>
+                            <div class="coin-symbol">${token.symbol}</div>
+                        </div>
+                        <div class="coin-balance">
+                            <div class="coin-amount">${balance} ${token.symbol}</div>
+                            <div class="coin-usd">$${numberWithCommas(usdValue)}</div>
+                        </div>
                     </div>
-                    <div class="coin-balance">
-                        <div class="coin-amount">${coin.balance} ${coin.symbol}</div>
-                        <div class="coin-usd">$${coin.usd}</div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             document.getElementById('coinsTab').innerHTML = coinsHTML;
             
-            // Load NFTs
-            let nftsHTML = '';
-            for (const [collection, nfts] of Object.entries(sampleNFTs)) {
+            // Load demo NFTs
+            let nftsHTML = demoNote;
+            sampleNFTs.forEach(collection => {
                 nftsHTML += `
                     <div class="collection">
-                        <div class="collection-header">${collection}</div>
+                        <div class="collection-header">${collection.name} (${collection.nfts.length})</div>
                         <div class="nft-grid">
-                            ${nfts.map(nft => `
+                            ${collection.nfts.map(nft => `
                                 <div class="nft-item">
                                     <div class="nft-image">🎨</div>
                                     <div class="nft-details">
                                         <div class="nft-name">${nft.name}</div>
-                                        <div class="nft-id">${nft.id}</div>
+                                        <div class="nft-id">#${nft.tokenId}</div>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
                 `;
-            }
+            });
             
             document.getElementById('nftsTab').innerHTML = nftsHTML;
             
-            // Update stats
-            document.getElementById('totalValue').textContent = '$21,493.00';
-            document.getElementById('tokenCount').textContent = '5';
-            document.getElementById('nftCount').textContent = '6';
+            // Update stats with demo data
+            const totalValue = sampleCoins.reduce((sum, token) => sum + token.usdValue, 0);
+            document.getElementById('totalValue').textContent = `$${numberWithCommas(totalValue.toFixed(2))}`;
+            document.getElementById('tokenCount').textContent = sampleCoins.length;
+            document.getElementById('nftCount').textContent = sampleNFTs.reduce((sum, c) => sum + c.nfts.length, 0);
+        }
+        
+        // Helper function to format numbers with commas
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         function switchTab(tab) {
@@ -537,26 +672,10 @@
             }
         });
 
-        // Note about API implementation
-        console.log(`
-        ⚠️ Important Implementation Notes:
-        
-        This is a functional UI demo. For production use, you'll need:
-        
-        1. Backend API server to handle requests to:
-           - Etherscan API (for token balances)
-           - OpenSea API (for NFT data)
-           - CoinGecko/CoinMarketCap (for USD prices)
-           - ENS resolver (for .eth names)
-        
-        2. API keys for these services
-        
-        3. CORS proxy or backend endpoints to avoid browser restrictions
-        
-        4. Rate limiting and caching to optimize API usage
-        
-        The UI is fully functional and ready to connect to your backend endpoints.
-        `);
+        // Log setup status
+        console.log('eth.af is running!');
+        console.log('This version shows demo data.');
+        console.log('To connect real blockchain data, set up the backend server.');
     </script>
 </body>
 </html>

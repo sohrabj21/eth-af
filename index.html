@@ -22,6 +22,8 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --fun-gradient: linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);
             --hover-scale: 1.05;
+            --ethereum-blue: #627EEA;
+            --base-blue: #0052FF;
         }
 
         body {
@@ -118,7 +120,7 @@
         .tagline {
             color: rgba(255,255,255,0.95);
             font-size: 1.4rem;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             font-weight: 400;
             letter-spacing: 0.5px;
         }
@@ -132,6 +134,35 @@
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
+        }
+
+        .chains-preview {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+        }
+
+        .chain-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .chain-badge:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
         }
 
         .search-container {
@@ -449,6 +480,14 @@
             color: white;
             border-color: transparent;
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .chain-tab.ethereum {
+            border-color: var(--ethereum-blue);
+        }
+
+        .chain-tab.base {
+            border-color: var(--base-blue);
         }
 
         .chain-emoji {
@@ -974,6 +1013,10 @@
                 font-size: 5rem;
             }
             
+            .chains-preview {
+                gap: 10px;
+            }
+            
             .chain-tabs {
                 gap: 8px;
             }
@@ -1012,6 +1055,21 @@
                 Multi-Chain Wallet Explorer 
                 <span class="emoji">🚀</span>
             </p>
+            
+            <!-- Show supported chains -->
+            <div class="chains-preview">
+                <div class="chain-badge">🟦 Ethereum</div>
+                <div class="chain-badge">🔵 Base</div>
+                <div class="chain-badge">🟣 Polygon</div>
+                <div class="chain-badge">🔷 Arbitrum</div>
+                <div class="chain-badge">🔴 Optimism</div>
+                <div class="chain-badge">🔺 Avalanche</div>
+                <div class="chain-badge">💥 Blast</div>
+                <div class="chain-badge">🟡 BSC</div>
+                <div class="chain-badge">⚫ Linea</div>
+                <div class="chain-badge">🌈 Zora</div>
+            </div>
+            
             <div class="search-container">
                 <input 
                     type="text" 
@@ -1082,6 +1140,9 @@
                 <div class="loading">
                     <div class="spinner"></div>
                     <p>Loading tokens from all chains... 🚀</p>
+                    <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 10px;">
+                        Ethereum • Base • Polygon • Arbitrum • Optimism • and more...
+                    </p>
                 </div>
             </div>
 
@@ -1119,6 +1180,20 @@
             ? 'http://localhost:3000/api' 
             : 'https://eth-af-backend.onrender.com/api';
 
+        // Chain configuration (matches backend)
+        const CHAIN_INFO = {
+            ethereum: { name: 'Ethereum', emoji: '🟦' },
+            base: { name: 'Base', emoji: '🔵' },
+            polygon: { name: 'Polygon', emoji: '🟣' },
+            arbitrum: { name: 'Arbitrum', emoji: '🔷' },
+            optimism: { name: 'Optimism', emoji: '🔴' },
+            avalanche: { name: 'Avalanche', emoji: '🔺' },
+            blast: { name: 'Blast', emoji: '💥' },
+            bsc: { name: 'BSC', emoji: '🟡' },
+            linea: { name: 'Linea', emoji: '⚫' },
+            zora: { name: 'Zora', emoji: '🌈' }
+        };
+
         let currentMainTab = 'tokens';
         let currentChain = 'all';
         let walletData = null;
@@ -1154,7 +1229,14 @@
         }
 
         function resetLoadingStates() {
-            document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading tokens from all chains... 🚀</p></div>';
+            document.getElementById('tokensTab').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading tokens from all chains... 🚀</p>
+                    <p style="font-size: 0.9rem; color: #9ca3af; margin-top: 10px;">
+                        Ethereum • Base • Polygon • Arbitrum • Optimism • and more...
+                    </p>
+                </div>`;
             document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading your NFT collections... 🎨</p></div>';
             document.getElementById('activityTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading recent transactions... 📊</p></div>';
             
@@ -1249,23 +1331,48 @@
                 return;
             }
 
-            // Build chain tabs
+            // Build chain tabs - ALWAYS show Ethereum and Base first
             let html = `<div class="chain-tabs">`;
             html += `<button class="chain-tab active" onclick="filterByChain('all', this)">
                 <span class="chain-emoji">🌐</span> All Chains (${data.tokens.length})
             </button>`;
             
-            // Add a tab for each chain that has tokens
+            // Priority chains - Ethereum and Base first
+            const priorityChains = ['ethereum', 'base'];
+            const otherChains = [];
+            
+            // Sort chains
             Object.entries(data.tokensByChain || {}).forEach(([chain, tokens]) => {
                 if (tokens.length > 0) {
-                    const emoji = tokens[0].chainEmoji || '🔷';
-                    const chainName = tokens[0].chainName || chain;
+                    if (priorityChains.includes(chain)) {
+                        // Will add these first
+                    } else {
+                        otherChains.push([chain, tokens]);
+                    }
+                }
+            });
+            
+            // Add Ethereum and Base tabs first (if they have tokens)
+            priorityChains.forEach(chain => {
+                const tokens = data.tokensByChain?.[chain];
+                if (tokens && tokens.length > 0) {
+                    const chainInfo = CHAIN_INFO[chain] || { name: chain, emoji: '🔷' };
                     html += `
-                        <button class="chain-tab" onclick="filterByChain('${chain}', this)">
-                            <span class="chain-emoji">${emoji}</span> ${chainName} (${tokens.length})
+                        <button class="chain-tab ${chain}" onclick="filterByChain('${chain}', this)">
+                            <span class="chain-emoji">${chainInfo.emoji}</span> ${chainInfo.name} (${tokens.length})
                         </button>
                     `;
                 }
+            });
+            
+            // Add other chains
+            otherChains.forEach(([chain, tokens]) => {
+                const chainInfo = CHAIN_INFO[chain] || { name: chain, emoji: '🔷' };
+                html += `
+                    <button class="chain-tab" onclick="filterByChain('${chain}', this)">
+                        <span class="chain-emoji">${chainInfo.emoji}</span> ${chainInfo.name} (${tokens.length})
+                    </button>
+                `;
             });
             
             html += `</div><div class="tokens-grid" id="tokensGrid">`;
@@ -1288,7 +1395,8 @@
 
         function createTokenHTML(token) {
             const displayBalance = formatBalance(token.balance, token.symbol);
-            const chainEmoji = token.chainEmoji || '🔷';
+            const chainInfo = CHAIN_INFO[token.chain] || { emoji: '🔷' };
+            const chainEmoji = token.chainEmoji || chainInfo.emoji;
             
             return `
                 <div class="token-item" data-chain="${token.chain}">
@@ -1338,7 +1446,10 @@
                 document.getElementById('nftsTab').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">🎨</div>
-                        <div class="empty-state-text">No NFTs found in this wallet</div>
+                        <div class="empty-state-text">No NFT collections found</div>
+                        <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 10px;">
+                            Collections with trading volume are prioritized
+                        </p>
                     </div>
                 `;
                 return;
@@ -1352,19 +1463,49 @@
                 const isActive = index === 0;
                 const collectionId = `collection-${index}`;
                 
+                // Add floor price badge if available
+                const floorBadge = collection.floorPrice > 0 
+                    ? `<span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 8px;">
+                        ${collection.floorPrice.toFixed(3)} ETH floor
+                       </span>` 
+                    : '';
+                
                 tabsHtml += `
                     <button class="collection-tab ${isActive ? 'active' : ''}" 
                             onclick="switchNFTCollection('${collectionId}', this)">
                         ${collection.name}
                         <span class="collection-count">${collection.nfts.length}</span>
+                        ${floorBadge}
                     </button>
                 `;
                 
                 contentHtml += `
                     <div id="${collectionId}" class="nft-collection-content ${isActive ? 'active' : ''}">
+                        ${collection.floorPrice > 0 ? `
+                            <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 15px; border: 2px solid #86efac;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; color: #059669; font-weight: 600;">
+                                            Floor Price via ${collection.marketplace || 'OpenSea'}
+                                        </div>
+                                        <div style="font-size: 1.4rem; font-weight: 700; color: #047857;">
+                                            ${collection.floorPrice.toFixed(3)} ETH
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 0.9rem; color: #059669;">
+                                            Collection Value
+                                        </div>
+                                        <div style="font-size: 1.2rem; font-weight: 700; color: #047857;">
+                                            ${collection.totalValue.toFixed(2)} ETH
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
                         <div class="nft-grid">
                             ${collection.nfts.map(nft => `
-                                <div class="nft-item" onclick="openNFTModal('${nft.largeImage || nft.image || ''}', '${nft.name.replace(/'/g, "\\'")}', '${nft.tokenId}')">
+                                <div class="nft-item" onclick="openNFTModal('${(nft.largeImage || nft.image || '').replace(/'/g, "\\'")}', '${nft.name.replace(/'/g, "\\'")}', '${nft.tokenId}')">
                                     <div class="nft-image">
                                         ${nft.image ? 
                                             `<img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='🖼️'">` : 
@@ -1557,7 +1698,7 @@
         });
 
         console.log('👽 eth.af v9.0 - Ultra Fast Multi-Chain Explorer!');
-        console.log('🚀 Features: 10+ chains, spam filtering, NFT zoom, etherscan links');
+        console.log('🚀 Features: 10+ chains including Ethereum & Base');
         console.log('⚡ Optimized for speed with parallel processing!');
     </script>
 </body>

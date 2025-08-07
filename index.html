@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eth.af - The Fun Ethereum & Base Explorer 🚀</title>
+    <title>eth.af - Multi-Chain Wallet Explorer 👽</title>
+    
+    <!-- Alien Emoji Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👽</text></svg>">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -18,8 +22,6 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --fun-gradient: linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);
             --hover-scale: 1.05;
-            --ethereum-blue: #627EEA;
-            --base-blue: #0052FF;
         }
 
         body {
@@ -222,18 +224,18 @@
         .wallet-header {
             background: var(--primary-gradient);
             color: white;
-            padding: 25px 35px;
+            padding: 30px 35px;
             position: relative;
             overflow: hidden;
         }
 
         .wallet-header::before {
-            content: '💎';
+            content: '👽';
             position: absolute;
-            top: 20px;
-            right: 30px;
+            top: 30px;
+            right: 35px;
             font-size: 4rem;
-            opacity: 0.1;
+            opacity: 0.15;
             animation: float 3s ease-in-out infinite;
         }
 
@@ -242,11 +244,9 @@
             50% { transform: translateY(-20px) rotate(10deg); }
         }
 
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
+        .header-content {
+            position: relative;
+            z-index: 1;
         }
 
         .back-btn {
@@ -263,6 +263,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            margin-bottom: 20px;
         }
 
         .back-btn:hover {
@@ -271,13 +272,20 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        .address-container {
+        .address-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .address-info {
             flex: 1;
-            margin: 0 20px;
+            min-width: 0;
         }
 
         .ens-name {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 8px;
             display: flex;
@@ -298,53 +306,62 @@
             font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
             font-size: 0.95rem;
             word-break: break-all;
-            opacity: 0.85;
+            opacity: 0.9;
             font-weight: 500;
             letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .wallet-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 25px;
-            position: relative;
-            z-index: 1;
-            margin-top: 25px;
-        }
-
-        .stat {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
+        .copy-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
             border-radius: 20px;
-            backdrop-filter: blur(10px);
+            cursor: pointer;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
-        }
-
-        .stat:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-3px);
-        }
-
-        .stat-emoji {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-weight: 600;
-            margin-bottom: 5px;
         }
 
-        .stat-value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background: rgba(46, 213, 115, 0.3);
+            border-color: rgba(46, 213, 115, 0.5);
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .summary-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+
+        .summary-stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
         }
 
         /* Main Tabs */
@@ -401,14 +418,15 @@
         /* Coins Section */
         .chain-tabs {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e8ecf1;
+            flex-wrap: wrap;
         }
 
         .chain-tab {
-            padding: 12px 24px;
+            padding: 10px 18px;
             background: white;
             border: 2px solid #e8ecf1;
             border-radius: 50px;
@@ -417,8 +435,8 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
+            gap: 6px;
+            font-size: 0.9rem;
         }
 
         .chain-tab:hover {
@@ -434,7 +452,7 @@
         }
 
         .chain-emoji {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .tokens-grid {
@@ -547,6 +565,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .token-chain-name {
+            font-size: 0.75rem;
+            opacity: 0.7;
         }
 
         .token-balance {
@@ -699,6 +722,180 @@
             font-weight: 500;
         }
 
+        /* NFT Modal */
+        .nft-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        .nft-modal.active {
+            display: flex;
+        }
+
+        .nft-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .nft-modal-image {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .nft-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .nft-modal-close:hover {
+            transform: scale(1.2);
+        }
+
+        .nft-modal-info {
+            position: absolute;
+            bottom: -60px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+        }
+
+        .nft-modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .nft-modal-id {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Activity Section */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            border: 2px solid #e8ecf1;
+            transition: all 0.3s ease;
+            gap: 20px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.send {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .activity-icon.receive {
+            background: #dcfce7;
+            color: #10b981;
+        }
+
+        .activity-icon.contract {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .activity-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-method {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .activity-hash {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-value {
+            text-align: right;
+        }
+
+        .activity-amount {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1a1a2e;
+        }
+
+        .activity-time {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .activity-link-icon {
+            color: #667eea;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+
         /* Loading and Empty States */
         .loading {
             text-align: center;
@@ -771,119 +968,19 @@
             font-weight: 500;
         }
 
-        /* Activity Section */
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background: white;
-            border-radius: 20px;
-            border: 2px solid #e8ecf1;
-            transition: all 0.3s ease;
-            gap: 20px;
-        }
-
-        .activity-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .activity-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .activity-icon.send {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .activity-icon.receive {
-            background: #dcfce7;
-            color: #10b981;
-        }
-
-        .activity-icon.contract {
-            background: #e0e7ff;
-            color: #667eea;
-        }
-
-        .activity-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .activity-method {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #1a1a2e;
-            margin-bottom: 4px;
-        }
-
-        .activity-hash {
-            color: #6b7280;
-            font-size: 0.85rem;
-            font-family: monospace;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .activity-value {
-            text-align: right;
-        }
-
-        .activity-amount {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #1a1a2e;
-        }
-
-        .activity-time {
-            color: #6b7280;
-            font-size: 0.85rem;
-            margin-top: 4px;
-        }
-
-        /* NFT Floor Price Badge */
-        .floor-price-badge {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .floor-price-badge.no-floor {
-            background: #e5e7eb;
-            color: #6b7280;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .logo {
                 font-size: 5rem;
             }
             
-            .wallet-stats {
-                grid-template-columns: repeat(2, 1fr);
+            .chain-tabs {
+                gap: 8px;
+            }
+            
+            .chain-tab {
+                padding: 8px 14px;
+                font-size: 0.85rem;
             }
             
             .nft-grid {
@@ -911,9 +1008,9 @@
             </a>
             <p class="logo-subtitle">Get this domain →</p>
             <p class="tagline">
-                <span class="emoji">🚀</span> 
+                <span class="emoji">👽</span> 
                 Multi-Chain Wallet Explorer 
-                <span class="emoji">💎</span>
+                <span class="emoji">🚀</span>
             </p>
             <div class="search-container">
                 <input 
@@ -932,40 +1029,39 @@
         <!-- Wallet View -->
         <div id="walletView" class="wallet-view">
             <div class="wallet-header">
-                <div class="header-top">
+                <div class="header-content">
                     <button onclick="goBack()" class="back-btn">
                         ← New Search
                     </button>
-                </div>
-                <div class="address-container">
-                    <div id="ensNameContainer" class="ens-name" style="display: none;">
-                        <span id="ensName"></span>
-                        <span class="ens-badge">ENS</span>
+                    
+                    <div class="address-section">
+                        <div class="address-info">
+                            <div id="ensNameContainer" class="ens-name" style="display: none;">
+                                <span id="ensName"></span>
+                                <span class="ens-badge">ENS</span>
+                            </div>
+                            <div class="wallet-address">
+                                <span id="walletAddress"></span>
+                                <button class="copy-btn" onclick="copyAddress()" id="copyBtn">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="wallet-address" id="walletAddress"></div>
-                </div>
-                
-                <!-- FIXED: Added the missing wallet-stats section -->
-                <div class="wallet-stats">
-                    <div class="stat">
-                        <span class="stat-emoji">💰</span>
-                        <div class="stat-label">Total Value</div>
-                        <div class="stat-value" id="totalValue">Loading...</div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-emoji">🪙</span>
-                        <div class="stat-label">Tokens</div>
-                        <div class="stat-value" id="tokenCount">...</div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-emoji">🎨</span>
-                        <div class="stat-label">NFTs</div>
-                        <div class="stat-value" id="nftCount">...</div>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-emoji">⛓️</span>
-                        <div class="stat-label">Chains</div>
-                        <div class="stat-value" id="chainCount">...</div>
+                    
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Total Value:</span>
+                            <span class="summary-stat-value" id="totalValue">$0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Tokens:</span>
+                            <span class="summary-stat-value" id="tokenCount">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">NFTs:</span>
+                            <span class="summary-stat-value" id="nftCount">0</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -985,7 +1081,7 @@
             <div id="tokensTab" class="tab-content active">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading all tokens from Ethereum & Base L2... 🚀</p>
+                    <p>Loading tokens from all chains... 🚀</p>
                 </div>
             </div>
 
@@ -1005,6 +1101,18 @@
         </div>
     </div>
 
+    <!-- NFT Modal -->
+    <div id="nftModal" class="nft-modal" onclick="closeNFTModal()">
+        <div class="nft-modal-content" onclick="event.stopPropagation()">
+            <span class="nft-modal-close" onclick="closeNFTModal()">✕</span>
+            <img id="nftModalImage" class="nft-modal-image" src="" alt="">
+            <div class="nft-modal-info">
+                <div id="nftModalTitle" class="nft-modal-title"></div>
+                <div id="nftModalId" class="nft-modal-id"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Configuration
         const API_URL = window.location.hostname === 'localhost' 
@@ -1014,6 +1122,7 @@
         let currentMainTab = 'tokens';
         let currentChain = 'all';
         let walletData = null;
+        let currentAddress = null;
 
         function isValidAddress(address) {
             return /^0x[a-fA-F0-9]{40}$/.test(address) || /\.eth$/.test(address);
@@ -1023,7 +1132,7 @@
             const input = document.getElementById('searchInput').value.trim();
             
             if (!input) {
-                alert('Please enter an Ethereum address or ENS name! 🔍');
+                alert('Please enter an Ethereum address or ENS name! 👽');
                 return;
             }
 
@@ -1045,32 +1154,21 @@
         }
 
         function resetLoadingStates() {
-            document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all tokens from Ethereum & Base L2... 🚀</p></div>';
+            document.getElementById('tokensTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading tokens from all chains... 🚀</p></div>';
             document.getElementById('nftsTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading your NFT collections... 🎨</p></div>';
             document.getElementById('activityTab').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading recent transactions... 📊</p></div>';
             
-            // FIXED: Check if elements exist before updating them
-            const totalValue = document.getElementById('totalValue');
-            const tokenCount = document.getElementById('tokenCount');
-            const nftCount = document.getElementById('nftCount');
-            const chainCount = document.getElementById('chainCount');
-            
-            if (totalValue) totalValue.textContent = 'Loading...';
-            if (tokenCount) tokenCount.textContent = '...';
-            if (nftCount) nftCount.textContent = '...';
-            if (chainCount) chainCount.textContent = '...';
+            document.getElementById('totalValue').textContent = '$0';
+            document.getElementById('tokenCount').textContent = '0';
+            document.getElementById('nftCount').textContent = '0';
         }
 
         async function loadWalletData(address) {
-            // Set a timeout for the entire operation
-            const timeout = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Request timeout')), 30000)
-            );
+            const startTime = Date.now();
             
             try {
                 console.log('Fetching wallet data for:', address);
-                const fetchPromise = fetch(`${API_URL}/wallet/${address}`);
-                const response = await Promise.race([fetchPromise, timeout]);
+                const response = await fetch(`${API_URL}/wallet/${address}`);
                 
                 if (!response.ok) {
                     const error = await response.json();
@@ -1078,6 +1176,7 @@
                 }
                 
                 walletData = await response.json();
+                currentAddress = walletData.address;
                 
                 console.log(`Loaded wallet data in ${walletData.responseTime}ms`, walletData);
                 
@@ -1087,10 +1186,10 @@
                 // Display tokens with chain tabs
                 displayTokensWithChains(walletData);
                 
-                // Display NFTs with collection tabs and floor prices
+                // Display NFTs with collection tabs
                 displayNFTsWithTabs(walletData.nfts);
                 
-                // Display activity
+                // Display activity with etherscan links
                 displayActivity(walletData.activity);
                 
                 // Update stats
@@ -1101,9 +1200,7 @@
                 
                 let errorMessage = 'Failed to load wallet data. ';
                 
-                if (error.message === 'Request timeout') {
-                    errorMessage = 'Request timed out. The wallet might have too many tokens or the server is slow. Please try again.';
-                } else if (error.message.includes('ENS')) {
+                if (error.message.includes('ENS')) {
                     errorMessage = 'Could not resolve ENS name. Please check the name and try again.';
                 } else if (error.message.includes('Invalid')) {
                     errorMessage = 'Invalid address or ENS name. Please check and try again.';
@@ -1117,6 +1214,7 @@
 
         function displayAddressInfo(data) {
             document.getElementById('walletAddress').textContent = data.address;
+            currentAddress = data.address;
             
             if (data.ensName) {
                 document.getElementById('ensNameContainer').style.display = 'flex';
@@ -1124,6 +1222,20 @@
             } else {
                 document.getElementById('ensNameContainer').style.display = 'none';
             }
+        }
+
+        function copyAddress() {
+            const address = currentAddress;
+            navigator.clipboard.writeText(address).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.classList.add('copied');
+                btn.innerHTML = '✅ Copied!';
+                
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '📋 Copy';
+                }, 2000);
+            });
         }
 
         function displayTokensWithChains(data) {
@@ -1137,31 +1249,29 @@
                 return;
             }
 
-            const ethereumTokens = data.tokensByChain?.ethereum || [];
-            const baseTokens = data.tokensByChain?.base || [];
-            const allTokens = data.tokens;
-
-            let html = `
-                <div class="chain-tabs">
-                    <button class="chain-tab active" onclick="filterByChain('all', this)">
-                        <span class="chain-emoji">🌐</span> All Chains
-                    </button>
-                    ${ethereumTokens.length > 0 ? `
-                        <button class="chain-tab" onclick="filterByChain('ethereum', this)">
-                            <span class="chain-emoji">🟦</span> Ethereum (${ethereumTokens.length})
+            // Build chain tabs
+            let html = `<div class="chain-tabs">`;
+            html += `<button class="chain-tab active" onclick="filterByChain('all', this)">
+                <span class="chain-emoji">🌐</span> All Chains (${data.tokens.length})
+            </button>`;
+            
+            // Add a tab for each chain that has tokens
+            Object.entries(data.tokensByChain || {}).forEach(([chain, tokens]) => {
+                if (tokens.length > 0) {
+                    const emoji = tokens[0].chainEmoji || '🔷';
+                    const chainName = tokens[0].chainName || chain;
+                    html += `
+                        <button class="chain-tab" onclick="filterByChain('${chain}', this)">
+                            <span class="chain-emoji">${emoji}</span> ${chainName} (${tokens.length})
                         </button>
-                    ` : ''}
-                    ${baseTokens.length > 0 ? `
-                        <button class="chain-tab" onclick="filterByChain('base', this)">
-                            <span class="chain-emoji">🔵</span> Base L2 (${baseTokens.length})
-                        </button>
-                    ` : ''}
-                </div>
-                <div class="tokens-grid" id="tokensGrid">
-            `;
-
+                    `;
+                }
+            });
+            
+            html += `</div><div class="tokens-grid" id="tokensGrid">`;
+            
             // Display all tokens initially
-            allTokens.forEach(token => {
+            data.tokens.forEach(token => {
                 html += createTokenHTML(token);
             });
 
@@ -1171,15 +1281,14 @@
             
             // Store data for filtering
             window.tokenData = {
-                all: allTokens,
-                ethereum: ethereumTokens,
-                base: baseTokens
+                all: data.tokens,
+                ...data.tokensByChain
             };
         }
 
         function createTokenHTML(token) {
             const displayBalance = formatBalance(token.balance, token.symbol);
-            const chainEmoji = token.chainEmoji || (token.chain === 'base' ? '🔵' : '🟦');
+            const chainEmoji = token.chainEmoji || '🔷';
             
             return `
                 <div class="token-item" data-chain="${token.chain}">
@@ -1195,6 +1304,7 @@
                         <div class="token-symbol">
                             ${token.symbol}
                             ${token.isNative ? '• Native' : ''}
+                            <span class="token-chain-name">on ${token.chainName || token.chain}</span>
                         </div>
                     </div>
                     <div class="token-balance">
@@ -1234,8 +1344,6 @@
                 return;
             }
 
-            // Collections are already sorted by totalValue from backend
-
             // Create tabs for collections
             let tabsHtml = '<div class="nft-collections-tabs">';
             let contentHtml = '';
@@ -1243,14 +1351,6 @@
             nfts.forEach((collection, index) => {
                 const isActive = index === 0;
                 const collectionId = `collection-${index}`;
-                
-                // Calculate display values
-                const floorDisplay = collection.floorPrice > 0 
-                    ? `${collection.floorPrice.toFixed(3)} ETH` 
-                    : 'No floor data';
-                const totalValueDisplay = collection.totalValue > 0
-                    ? `(${(collection.totalValue).toFixed(2)} ETH total)`
-                    : '';
                 
                 tabsHtml += `
                     <button class="collection-tab ${isActive ? 'active' : ''}" 
@@ -1262,27 +1362,9 @@
                 
                 contentHtml += `
                     <div id="${collectionId}" class="nft-collection-content ${isActive ? 'active' : ''}">
-                        <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 15px;">
-                            <div style="font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px;">
-                                ${collection.name}
-                            </div>
-                            <div style="display: flex; gap: 20px; align-items: center;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="font-size: 0.9rem; color: #6b7280;">Floor Price:</span>
-                                    <span style="font-size: 1rem; font-weight: 600; color: ${collection.floorPrice > 0 ? '#10b981' : '#9ca3af'};">
-                                        ${floorDisplay}
-                                    </span>
-                                </div>
-                                ${totalValueDisplay ? `
-                                    <div style="font-size: 0.9rem; color: #6b7280;">
-                                        ${totalValueDisplay}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
                         <div class="nft-grid">
                             ${collection.nfts.map(nft => `
-                                <div class="nft-item">
+                                <div class="nft-item" onclick="openNFTModal('${nft.largeImage || nft.image || ''}', '${nft.name.replace(/'/g, "\\'")}', '${nft.tokenId}')">
                                     <div class="nft-image">
                                         ${nft.image ? 
                                             `<img src="${nft.image}" alt="${nft.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='🖼️'">` : 
@@ -1303,6 +1385,23 @@
             tabsHtml += '</div>';
             
             document.getElementById('nftsTab').innerHTML = tabsHtml + contentHtml;
+        }
+
+        function openNFTModal(image, name, tokenId) {
+            if (!image) return;
+            
+            document.getElementById('nftModalImage').src = image;
+            document.getElementById('nftModalTitle').textContent = name;
+            document.getElementById('nftModalId').textContent = `Token #${tokenId}`;
+            document.getElementById('nftModal').classList.add('active');
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNFTModal() {
+            document.getElementById('nftModal').classList.remove('active');
+            document.body.style.overflow = '';
         }
 
         function displayActivity(activity) {
@@ -1336,9 +1435,10 @@
                 }
                 
                 const timeAgo = getTimeAgo(new Date(tx.timestamp));
+                const etherscanUrl = `https://etherscan.io/tx/${tx.hash}`;
                 
                 html += `
-                    <div class="activity-item">
+                    <a href="${etherscanUrl}" target="_blank" class="activity-item">
                         <div class="activity-icon ${iconClass}">${icon}</div>
                         <div class="activity-details">
                             <div class="activity-method">${tx.method || 'Transfer'}</div>
@@ -1350,7 +1450,8 @@
                             ${value > 0 ? `<div class="activity-amount">${value.toFixed(4)} ETH</div>` : ''}
                             <div class="activity-time">${timeAgo}</div>
                         </div>
-                    </div>
+                        <div class="activity-link-icon">🔗</div>
+                    </a>
                 `;
             });
             
@@ -1381,24 +1482,9 @@
         }
 
         function updateStats(data) {
-            // FIXED: Check if elements exist before updating them
-            const totalValue = document.getElementById('totalValue');
-            const tokenCount = document.getElementById('tokenCount');
-            const nftCount = document.getElementById('nftCount');
-            const chainCount = document.getElementById('chainCount');
-            
-            if (totalValue) {
-                totalValue.textContent = `$${numberWithCommas((data.totalValue || 0).toFixed(2))}`;
-            }
-            if (tokenCount) {
-                tokenCount.textContent = data.tokenCount || 0;
-            }
-            if (nftCount) {
-                nftCount.textContent = data.nftCount || 0;
-            }
-            if (chainCount) {
-                chainCount.textContent = data.chainsWithBalance?.length || 0;
-            }
+            document.getElementById('totalValue').textContent = `$${numberWithCommas((data.totalValue || 0).toFixed(2))}`;
+            document.getElementById('tokenCount').textContent = data.tokenCount || 0;
+            document.getElementById('nftCount').textContent = data.nftCount || 0;
         }
 
         function switchMainTab(tab) {
@@ -1463,10 +1549,16 @@
             }
         });
 
-        console.log('🚀 eth.af v3.0 - Full Ethereum & Base support with fun UI!');
-        console.log('💎 Features: All ERC-20 tokens, NFT collections, ENS names');
-        console.log('🎨 Made with love and lots of emojis!');
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeNFTModal();
+            }
+        });
+
+        console.log('👽 eth.af v9.0 - Ultra Fast Multi-Chain Explorer!');
+        console.log('🚀 Features: 10+ chains, spam filtering, NFT zoom, etherscan links');
+        console.log('⚡ Optimized for speed with parallel processing!');
     </script>
 </body>
 </html>
- 
